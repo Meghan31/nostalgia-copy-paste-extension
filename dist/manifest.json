@@ -1,0 +1,32 @@
+{
+	"manifest_version": 3,
+	"name": "Nostalgia - Notes Manager",
+	"version": "1.0.0",
+	"action": {
+		"default_popup": "popup.html",
+		"default_icon": {
+			"16": "public/16.png",
+			"32": "public/32.png",
+			"48": "public/48.png",
+			"192": "public/192.png"
+		}
+	},
+	"description": "Save copied text as notes directly from your clipboard!",
+	"icons": {
+		"16": "public/16.png",
+		"32": "public/32.png",
+		"48": "public/48.png",
+		"192": "public/192.png"
+	},
+	"permissions": ["storage"],
+
+	"options_page": "options.html",
+	"commands": {
+		"add_note": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+V"
+			},
+			"description": "Add a new note from the clipboard"
+		}
+	}
+}
