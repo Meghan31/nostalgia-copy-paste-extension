@@ -128,6 +128,7 @@
 		border-radius: 10px;
 
 		.paste-input {
+			background-color: #f8f9fa;
 			input {
 				width: 85%;
 				padding: 10px;
@@ -149,10 +150,17 @@
 			}
 		}
 		.copy-here {
-			h3 {
-				font-size: 1.1em;
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			p {
+				font-size: 1em;
 				font-weight: bold;
 				margin: 5px;
+				// width: 100;
+				height: 60px;
+				overflow-x: scroll;
+				overflow-y: scroll;
 			}
 			display: flex;
 			flex-direction: row;
@@ -160,41 +168,46 @@
 			margin: 10px 10px -10px 15px;
 
 			.button-group {
+				// width: 65%;
 				display: flex;
 				gap: 8px;
-			}
 
-			.delete-btn {
-				background-color: #ef5757;
-				color: white;
-				border: none;
-				padding: 5px 10px;
-				text-align: center;
-				text-decoration: none;
-				display: inline-block;
-				font-size: 16px;
-				margin: 4px 2px;
-				cursor: pointer;
-				border-radius: 20px;
-				&:hover {
-					background-color: #cc0000;
+				.delete-btn {
+					height: 45px;
+					background-color: #ef5757;
+					color: white;
+					border: none;
+					padding: 5px 10px;
+					text-align: center;
+					text-decoration: none;
+					display: inline-block;
+					font-size: 12px;
+					font-weight: bolder;
+					margin: 4px 2px;
+					cursor: pointer;
+					border-radius: 20px;
+					&:hover {
+						background-color: #cc0000;
+					}
 				}
-			}
 
-			.copy-btn {
-				background-color: #ec8ab8;
-				color: white;
-				border: none;
-				padding: 5px 10px;
-				text-align: center;
-				text-decoration: none;
-				display: inline-block;
-				font-size: 16px;
-				margin: 4px 2px;
-				cursor: pointer;
-				border-radius: 20px;
-				&:hover {
-					background-color: #e95299;
+				.copy-btn {
+					height: 45px;
+					background-color: #ec8ab8;
+					color: white;
+					border: none;
+					padding: 5px 10px;
+					text-align: center;
+					text-decoration: none;
+					display: inline-block;
+					font-size: 12px;
+					font-weight: bolder;
+					margin: 4px 2px;
+					cursor: pointer;
+					border-radius: 20px;
+					&:hover {
+						background-color: #e95299;
+					}
 				}
 			}
 		}
