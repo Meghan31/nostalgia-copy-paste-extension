@@ -25,6 +25,9 @@ export const Popup = () => {
 	const [draggedItem, setDraggedItem] = useState<string | null>(null);
 	const [isDragEnabled, setIsDragEnabled] = useState(false);
 
+	// Theme state
+	const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
 	// Use refs to store timeouts so they can be cleared
 	const addNoteTimeoutRef = useRef<number | null>(null);
 	const errorTimeoutRef = useRef<number | null>(null);
@@ -51,6 +54,16 @@ export const Popup = () => {
 	// Load saved notes when component mounts
 	useEffect(() => {
 		loadSavedNotes();
+	}, []);
+
+	// Load theme preference when component mounts
+	useEffect(() => {
+		chrome.storage.local.get(['theme'], (result) => {
+			const savedTheme = result.theme || 'light';
+			setTheme(savedTheme);
+			document.documentElement.className =
+				savedTheme === 'dark' ? 'dark-theme' : '';
+		});
 	}, []);
 
 	// Generate a unique ID for notes
@@ -233,6 +246,15 @@ export const Popup = () => {
 		}
 	};
 
+	// Toggle theme
+	const toggleTheme = () => {
+		const newTheme = theme === 'light' ? 'dark' : 'light';
+		setTheme(newTheme);
+		document.documentElement.className =
+			newTheme === 'dark' ? 'dark-theme' : '';
+		chrome.storage.local.set({ theme: newTheme });
+	};
+
 	// Handle drag start - only works when drag is enabled
 	const handleDragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
 		if (!isDragEnabled) {
@@ -309,20 +331,25 @@ export const Popup = () => {
 		<div className="popup-container">
 			<div className="header">
 				<div className="title">
-					<img src="public/48.png" alt="Nostalgia" className="icon" />
 					<div className="heading">
+						<img src="public/48.png" alt="Nostalgia" className="icon" />
 						<h1>Nostalgia</h1>
+					</div>
+					<div className="theme-toggle">
+						<button
+							onClick={toggleTheme}
+							className="theme-toggle-btn"
+							aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+						>
+							<span className="theme-label">{theme}</span>
+							<div className="toggle-switch">
+								<div className="toggle-slider"></div>
+							</div>
+						</button>
 					</div>
 				</div>
 
-				{error && (
-					<div
-						className="error-message"
-						style={{ color: 'red', padding: '5px', margin: '5px 0' }}
-					>
-						{error}
-					</div>
-				)}
+				{error && <div className="error-message">{error}</div>}
 
 				<br />
 				<div className="sub-heading">
@@ -338,7 +365,7 @@ export const Popup = () => {
 							placeholder="Give a heading"
 							value={newHeading}
 							onChange={(e) => setNewHeading(e.target.value)}
-							style={{ color: redColor }}
+							className={redColor === 'red' ? 'error' : ''}
 							maxLength={100} // Reasonable limit for headings
 						/>
 						<textarea
@@ -346,14 +373,11 @@ export const Popup = () => {
 							placeholder="Enter text here"
 							value={newText}
 							onChange={(e) => setNewText(e.target.value)}
-							style={{ color: redColor }}
+							className={redColor === 'red' ? 'error' : ''}
 							maxLength={MAX_TEXT_LENGTH}
 						/>
 						{newText && (
-							<div
-								className="character-count"
-								style={{ fontSize: '0.8rem', textAlign: 'right' }}
-							>
+							<div className="character-count">
 								{newText.length}/{MAX_TEXT_LENGTH}
 							</div>
 						)}
@@ -369,53 +393,30 @@ export const Popup = () => {
 
 				{copiedTexts.length > 0 ? (
 					<div className="notes-container">
-						<div className="drag-div">
-							<div className="checkbox-container">
-								<label
-									style={{
-										display: 'flex',
-										flexDirection: 'row',
-										// justifyContent: 'space-around',
-										alignItems: 'center',
-										marginLeft: '5px',
-										marginRight: '5px',
-									}}
-								>
-									<input
-										type="checkbox"
-										checked={isDragEnabled}
-										onChange={toggleDragMode}
-									/>
-									<p
-										className="drag-instructions"
-										style={{
-											fontSize: '0.8rem',
-											fontStyle: 'italic',
-											margin: '10px',
-										}}
-									>
-										{isDragEnabled
-											? 'Drag mode enabled'
-											: 'Check to enable drag mode'}
-									</p>
-								</label>
-							</div>
+						<div className="drag-mode-toggle">
+							<input
+								type="checkbox"
+								id="drag-mode"
+								checked={isDragEnabled}
+								onChange={toggleDragMode}
+							/>
+							<label htmlFor="drag-mode">
+								{isDragEnabled
+									? 'Drag mode enabled - Reorder by dragging'
+									: 'Enable drag mode to reorder notes'}
+							</label>
 						</div>
 						{copiedTexts.map((note) => (
 							<div
 								key={note.id}
-								className="copied-text"
+								className={`copied-text ${
+									draggedItem === note.id ? 'dragging' : ''
+								}`}
 								draggable={isDragEnabled}
 								onDragStart={(e) => handleDragStart(e, note.id)}
 								onDragEnd={handleDragEnd}
 								onDragOver={handleDragOver}
 								onDrop={(e) => handleDrop(e, note.id)}
-								style={{
-									cursor: isDragEnabled ? 'move' : 'default',
-									borderLeft:
-										draggedItem === note.id ? '3px solid #4a90e2' : 'none',
-									background: draggedItem === note.id ? 'grey' : '#f8f9fa',
-								}}
 							>
 								<div className="copy-here">
 									<p>{note.heading}</p>
