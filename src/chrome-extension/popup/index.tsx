@@ -552,6 +552,9 @@ export const Popup = () => {
 										onDrop={(e) => handleDrop(e, note.id)}
 									>
 										<div className="copy-here">
+											<span className="pin-icon" role="img" aria-label="Pinned">
+												📌
+											</span>
 											<p>{note.heading}</p>
 											<div className="button-group">
 												<button
