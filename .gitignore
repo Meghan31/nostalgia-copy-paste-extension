@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Local env / tooling
+.env
+.env.*
+.claude/
+
+# Editor configs
+.vscode/
+
+# OS junk
+.DS_Store
