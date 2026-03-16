@@ -1,633 +1,215 @@
-/* ========================================
-   Popup Container
-   ======================================== */
-.popup-container {
-  width: 300px;
-  min-height: 500px;
-  background: var(--bg-primary);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-/* ========================================
-   Header Section
-   ======================================== */
 .header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-lg);
-
-  .title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
-    background: var(--bg-card);
-    border-radius: var(--border-radius-lg);
-    border: 1px solid var(--bg-card-border);
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.3s ease;
-
-    &:hover {
-      box-shadow: var(--shadow-md);
-    }
-
-    .heading {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      flex: 1;
-
-      img {
-        width: 32px;
-        height: 32px;
-      }
-
-      h1 {
-        color: var(--text-primary);
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin: 0;
-        text-shadow: none;
-      }
-    }
-  }
-
-  /* Error Message */
-  .error-message {
-    background: var(--danger);
-    color: white;
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    font-size: 0.875rem;
-    font-weight: 500;
-    box-shadow: var(--shadow-md);
-    animation: slideIn 0.3s ease;
-  }
-
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Input Section */
-  .sub-heading {
-    width: 100%;
-    background: var(--bg-card);
-    border-radius: var(--border-radius-md);
-    padding: var(--spacing-lg);
-    border: 1px solid var(--bg-card-border);
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.3s ease;
-
-    &:hover {
-      box-shadow: var(--shadow-md);
-    }
-
-    .pastehere {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-md);
-
-      h2 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0;
-      }
-    }
-
-    .paste-input {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-sm);
-
-      input,
-      textarea {
-        width: 100%;
-        padding: var(--spacing-md);
-        background: var(--bg-input);
-        border: 1px solid var(--bg-card-border);
-        border-radius: var(--border-radius-sm);
-        color: var(--text-primary);
-        font-family: system-ui, -apple-system, sans-serif;
-        font-size: 0.875rem;
-        transition: all 0.2s ease;
-
-        &:focus {
-          outline: none;
-          border-color: var(--accent-primary);
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        &::placeholder {
-          color: var(--text-tertiary);
-        }
-
-        &.error {
-          border-color: var(--danger);
-          color: var(--danger);
-        }
-      }
-
-      textarea {
-        resize: vertical;
-        min-height: 70px;
-        line-height: 1.5;
-      }
-
-      .character-count {
-        font-size: 0.75rem;
-        color: var(--text-tertiary);
-        text-align: right;
-        margin-top: calc(var(--spacing-xs) * -1);
-      }
-    }
-
-    .pt-margin {
-      margin-top: var(--spacing-md);
-    }
-
-    /* Section Header with Buttons */
-    .sub-sub {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-md);
-
-      h2 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0;
-      }
-    }
-  }
-}
-
-/* ========================================
-   Note Cards
-   ======================================== */
-.header .copied-text {
-  width: 100%;
-  background: var(--bg-card);
-  border: 1px solid var(--bg-card-border);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-md);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s ease;
-
-  &:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
-  }
-
-  &[draggable='true'] {
-    cursor: move;
-  }
-
-  &.dragging {
-    opacity: 0.5;
-    transform: scale(0.98);
-    box-shadow: var(--shadow-lg);
-    border-left: 4px solid var(--accent-primary);
-    background: var(--bg-secondary);
-    cursor: grabbing;
-    z-index: 1000;
-  }
-
-  &.drag-over {
-    background: var(--bg-secondary);
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-  }
-
-  &.drop-indicator-before::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--accent-primary);
-    border-radius: var(--border-radius-full);
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-    animation: dropLinePulse 0.6s ease-in-out infinite;
-    z-index: 10;
-  }
-
-  &.drop-indicator-after::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--accent-primary);
-    border-radius: var(--border-radius-full);
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-    animation: dropLinePulse 0.6s ease-in-out infinite;
-    z-index: 10;
-  }
-
-  &.pinned {
-    border-left: 4px solid var(--accent-primary);
-    background: linear-gradient(
-      to right,
-      rgba(59, 130, 246, 0.05) 0%,
-      var(--bg-card) 20%
-    );
-    position: relative;
-
-    &::after {
-      content: 'PINNED';
-      position: absolute;
-      top: var(--spacing-sm);
-      right: var(--spacing-sm);
-      font-size: 0.625rem;
-      font-weight: 700;
-      color: var(--accent-primary);
-      background: rgba(59, 130, 246, 0.1);
-      padding: 2px 6px;
-      border-radius: var(--border-radius-sm);
-      letter-spacing: 0.5px;
-    }
-  }
-
-  .copy-here {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-
-    p {
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0;
-      flex: 1;
-      font-size: 0.9375rem;
-      line-height: 1.4;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      word-break: break-word;
-    }
-
-    .button-group {
-      display: flex;
-      gap: var(--spacing-sm);
-      flex-shrink: 0;
-    }
-  }
-
-  .paste-input textarea {
-    width: 100%;
-    padding: var(--spacing-md);
-    background: var(--bg-input);
-    border: 1px solid var(--bg-card-border);
-    border-radius: var(--border-radius-sm);
-    color: var(--text-primary);
-    resize: none;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    font-family: system-ui, -apple-system, sans-serif;
-    transition: all 0.2s ease;
-
-    &:focus {
-      outline: none;
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-  }
-}
-
-/* ========================================
-   Drag Mode Toggle
-   ======================================== */
-.drag-mode-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
-  background: var(--bg-card);
-  border: 1px solid var(--bg-card-border);
-  border-radius: var(--border-radius-md);
-  margin-bottom: var(--spacing-md);
-
-  input[type='checkbox'] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: var(--accent-primary);
-  }
-
-  label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    cursor: pointer;
-    user-select: none;
-  }
-}
-
-/* ========================================
-   Pin Button
-   ======================================== */
-.pin-btn {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--bg-card-border);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
-  font-size: 0.625rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-
-  &:hover:not(:disabled) {
-    background: var(--accent-primary);
-    color: white;
-    border-color: var(--accent-primary);
-    transform: translateY(-1px);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &.pinned {
-    background: var(--accent-primary);
-    color: white;
-    border-color: var(--accent-primary);
-
-    &:hover:not(:disabled) {
-      background: var(--accent-primary-hover);
-    }
-  }
-}
-
-/* ========================================
-   Section Divider
-   ======================================== */
-.notes-section-divider {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  margin: var(--spacing-lg) 0;
-  color: var(--text-tertiary);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--bg-card-border);
-  }
-}
-
-/* ========================================
-   Drop Line Animation
-   ======================================== */
-@keyframes dropLinePulse {
-  0%,
-  100% {
-    opacity: 0.6;
-    transform: scaleY(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scaleY(1.2);
-  }
-}
-
-/* ========================================
-   Theme Toggle
-   ======================================== */
-.theme-toggle {
-  .theme-toggle-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    background: transparent;
-    border: 1px solid var(--bg-card-border);
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--border-radius-full);
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: var(--bg-secondary);
-      border-color: var(--accent-primary);
-    }
-
-    &:active {
-      transform: scale(0.98);
-    }
-  }
-
-  .theme-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .toggle-switch {
-    width: 36px;
-    height: 18px;
-    background: var(--bg-input);
-    border-radius: var(--border-radius-full);
-    position: relative;
-    transition: background 0.3s ease;
-
-    .toggle-slider {
-      width: 14px;
-      height: 14px;
-      background: var(--accent-primary);
-      border-radius: 50%;
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      transition: transform 0.3s ease;
-      box-shadow: var(--shadow-sm);
-    }
-  }
-
-  .dark-theme & .toggle-slider {
-    transform: translateX(18px);
-  }
-}
-
-/* ========================================
-   Buttons
-   ======================================== */
-
-/* Base button styles */
-.btn,
-button {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border: none;
-  border-radius: var(--border-radius-sm);
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xs);
-  text-align: center;
-  text-decoration: none;
-  line-height: 1;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &:not(:disabled):hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-
-  &:not(:disabled):active {
-    transform: translateY(0);
-  }
-}
-
-/* Primary button (Add Note, Paste) */
-.btn-primary,
-.header .sub-heading .pastehere button,
-.header .sub-heading .sub-sub button {
-  background: var(--accent-primary);
-  color: white;
-  box-shadow: var(--shadow-sm);
-
-  &:hover:not(:disabled) {
-    background: var(--accent-primary-hover);
-  }
-
-  &.success {
-    background: var(--success);
-
-    &:hover:not(:disabled) {
-      background: var(--success-hover);
-    }
-  }
-}
-
-/* Copy button */
-.copy-btn,
-.header .copied-text .copy-here .button-group .copy-btn {
-  background: var(--accent-secondary);
-  color: white;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: none;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
-  height: auto;
-  margin: 0;
-
-  &:hover:not(:disabled) {
-    background: var(--accent-secondary-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &.copied {
-    background: var(--success);
-  }
-}
-
-/* Delete button */
-.delete-btn,
-.header .copied-text .copy-here .button-group .delete-btn {
-  background: var(--danger);
-  color: white;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: none;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
-  height: auto;
-  margin: 0;
-
-  &:hover:not(:disabled) {
-    background: var(--danger-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-/* Clear All button */
-.btn-danger {
-  background: var(--danger);
-  color: white;
-  box-shadow: var(--shadow-sm);
-
-  &:hover:not(:disabled) {
-    background: var(--danger-hover);
-  }
-}
-
-/* ========================================
-   Scrollbar Styling
-   ======================================== */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--bg-card-border) var(--bg-primary);
-}
-
-*::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-*::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
-
-*::-webkit-scrollbar-thumb {
-  background: var(--bg-card-border);
-  border-radius: var(--border-radius-full);
-
-  &:hover {
-    background: var(--text-tertiary);
-  }
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 20px;
+
+	.title {
+		display: flex;
+		flex-direction: row;
+		gap: 10px;
+
+		.heading {
+			// width: 40%;
+			font-size: 1.5em;
+
+			align-items: center;
+			font-weight: bold;
+			margin: 5px;
+			background-color: #f8f9fa;
+			border-bottom: 20px solid #e9ecef;
+			border-radius: 300px;
+			padding: 5px;
+
+			h1 {
+				color: #6c6e6f;
+				text-align: center;
+				width: 100%;
+				text-shadow: -2px 2px 4px rgba(67, 64, 64, 0.5);
+			}
+		}
+	}
+
+	.sub-heading {
+		width: 100%;
+		font-size: 1em;
+		align-items: center;
+		margin: 5px;
+		background-color: #f8f9fa;
+		border-bottom: 10px solid #e9ecef;
+		border-radius: 10px;
+
+		.sub-sub {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin: 5px;
+
+			button {
+				background-color: #e77373;
+				color: white;
+				border: none;
+				padding: 5px 10px;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				font-size: 16px;
+				margin: 4px 2px;
+				cursor: pointer;
+				border-radius: 20px;
+				box-shadow: 0 4px 6px #da8383;
+				&:hover {
+					background-color: #cc0000;
+				}
+			}
+		}
+		h2 {
+			font-size: 1.2em;
+			font-weight: bold;
+			margin: 5px;
+		}
+		.pastehere {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin: 10px;
+
+			button {
+				background-color: #739bc5;
+				color: white;
+				border: none;
+				padding: 5px 10px;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				font-size: 16px;
+				margin: 4px 2px;
+				cursor: pointer;
+				border-radius: 20px;
+				&:hover {
+					background-color: #023a67;
+				}
+			}
+		}
+		.pt-margin {
+			margin: 10px;
+		}
+
+		.paste-input {
+			input {
+				width: 85%;
+				padding: 10px;
+				margin-left: 20px;
+				border: 1px solid #000;
+				border-radius: 5px;
+				font-size: small;
+				font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
+					'Lucida Sans', Arial, sans-serif;
+			}
+			textarea {
+				width: 85%;
+				padding: 20px;
+				margin: 20px;
+				border: 1px solid #000;
+				border-radius: 5px;
+				font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
+					'Lucida Sans', Arial, sans-serif;
+			}
+		}
+	}
+	.copied-text {
+		width: 100%;
+		font-size: 1em;
+		align-items: center;
+		margin: 5px;
+		background-color: #f8f9fa;
+		border-bottom: 10px solid #e9ecef;
+		border-radius: 10px;
+
+		.paste-input {
+			background-color: #f8f9fa;
+			input {
+				width: 85%;
+				padding: 10px;
+				margin-left: 20px;
+				border: 1px solid #000;
+				border-radius: 5px;
+				font-size: small;
+				font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
+					'Lucida Sans', Arial, sans-serif;
+			}
+			textarea {
+				width: 85%;
+				padding: 20px;
+				margin: 20px;
+				border: 1px solid #000;
+				border-radius: 5px;
+				font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
+					'Lucida Sans', Arial, sans-serif;
+			}
+		}
+		.copy-here {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			p {
+				font-size: 1em;
+				font-weight: bold;
+				margin: 5px;
+				// width: 100;
+				height: 60px;
+				overflow-x: scroll;
+				overflow-y: scroll;
+			}
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin: 10px 10px -10px 15px;
+
+			.button-group {
+				// width: 65%;
+				display: flex;
+				gap: 8px;
+
+				.delete-btn {
+					height: 45px;
+					background-color: #ef5757;
+					color: white;
+					border: none;
+					padding: 5px 10px;
+					text-align: center;
+					text-decoration: none;
+					display: inline-block;
+					font-size: 12px;
+					font-weight: bolder;
+					margin: 4px 2px;
+					cursor: pointer;
+					border-radius: 20px;
+					&:hover {
+						background-color: #cc0000;
+					}
+				}
+
+				.copy-btn {
+					height: 45px;
+					background-color: #ec8ab8;
+					color: white;
+					border: none;
+					padding: 5px 10px;
+					text-align: center;
+					text-decoration: none;
+					display: inline-block;
+					font-size: 12px;
+					font-weight: bolder;
+					margin: 4px 2px;
+					cursor: pointer;
+					border-radius: 20px;
+					&:hover {
+						background-color: #e95299;
+					}
+				}
+			}
+		}
+	}
 }

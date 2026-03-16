@@ -5,12 +5,19 @@ import './options.scss';
 interface Note {
 	heading: string;
 	text: string;
-	id?: string;
 }
 
-interface CopiedState {
-	[key: string]: boolean;
-}
+// Function to copy text to clipboard
+const copyToClipboard = (text: string) => {
+	navigator.clipboard
+		.writeText(text)
+		.then(() => {
+			alert('Text copied to clipboard');
+		})
+		.catch((err) => {
+			console.error('Failed to copy text: ', err);
+		});
+};
 
 const Options = () => {
 	// const [copiedTexts, setCopiedTexts] = useState([
@@ -58,10 +65,7 @@ const Options = () => {
 	// ]);
 
 	const [notes, setNotes] = useState<Note[]>([]);
-	const [theme, setTheme] = useState<'light' | 'dark'>('light');
-	const [copiedStates, setCopiedStates] = useState<CopiedState>({});
 
-	// Load notes
 	useEffect(() => {
 		chrome.storage.local.get(['notes'], (result) => {
 			if (result.notes) {
@@ -72,78 +76,19 @@ const Options = () => {
 		});
 	}, []);
 
-	// Load theme preference
-	useEffect(() => {
-		chrome.storage.local.get(['theme'], (result) => {
-			const savedTheme = result.theme || 'light';
-			setTheme(savedTheme);
-			document.documentElement.className =
-				savedTheme === 'dark' ? 'dark-theme' : '';
-		});
-	}, []);
-
-	// Toggle theme
-	const toggleTheme = () => {
-		const newTheme = theme === 'light' ? 'dark' : 'light';
-		setTheme(newTheme);
-		document.documentElement.className =
-			newTheme === 'dark' ? 'dark-theme' : '';
-		chrome.storage.local.set({ theme: newTheme });
-	};
-
-	// Function to copy text to clipboard
-	const copyToClipboard = (text: string, index: number) => {
-		navigator.clipboard
-			.writeText(text)
-			.then(() => {
-				setCopiedStates((prev) => ({
-					...prev,
-					[index]: true,
-				}));
-
-				setTimeout(() => {
-					setCopiedStates((prev) => ({
-						...prev,
-						[index]: false,
-					}));
-				}, 1000);
-			})
-			.catch((err) => {
-				console.error('Failed to copy text: ', err);
-				alert('Failed to copy to clipboard');
-			});
-	};
-
 	// Function to delete a note
 	const deleteNote = (index: number) => {
-		if (window.confirm('Are you sure you want to delete this note?')) {
-			const updatedNotes = notes.filter((_, i) => i !== index);
-			chrome.storage.local.set({ notes: updatedNotes }, () => {
-				setNotes(updatedNotes);
-			});
-		}
+		const updatedNotes = notes.filter((_, i) => i !== index);
+		chrome.storage.local.set({ notes: updatedNotes }, () => {
+			setNotes(updatedNotes);
+		});
 	};
 
 	return (
 		<div>
 			<div className="header">
 				<img src="public/192.png" alt="Nostalgia" className="icon" />
-				<div className="title-container">
-					<h1 className="title">Nostalgia</h1>
-					<p className="subtitle">Copy-Paste Note Saver</p>
-				</div>
-				<div className="theme-toggle">
-					<button
-						onClick={toggleTheme}
-						className="theme-toggle-btn"
-						aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-					>
-						<span className="theme-label">{theme} mode</span>
-						<div className="toggle-switch">
-							<div className="toggle-slider"></div>
-						</div>
-					</button>
-				</div>
+				<div className="title">Nostalgia Copy-Paste Note Saver</div>
 			</div>
 			<div className="content">
 				<p className="all-notes">All Notes</p>
@@ -155,12 +100,10 @@ const Options = () => {
 									<h3>{note.heading}</h3>
 									<div className="btns">
 										<button
-											onClick={() => copyToClipboard(note.text, index)}
-											className={`copy-btn ${
-												copiedStates[index] ? 'copied' : ''
-											}`}
+											onClick={() => copyToClipboard(note.text)}
+											className="copy-btn"
 										>
-											{copiedStates[index] ? 'Copied!' : 'Copy'}
+											Copy
 										</button>
 										<button
 											onClick={() => deleteNote(index)}
@@ -176,7 +119,7 @@ const Options = () => {
 							</div>
 						))
 					) : (
-						<p className="no-notes">No saved notes yet. Create notes from the extension popup!</p>
+						<p>No saved texts.</p>
 					)}
 				</div>
 			</div>
