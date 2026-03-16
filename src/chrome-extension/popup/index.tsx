@@ -34,6 +34,9 @@ export const Popup = () => {
 	// Theme state
 	const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
+	// Search state
+	const [searchQuery, setSearchQuery] = useState('');
+
 	// Ref for notes container (for FLIP animation)
 	const notesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -443,9 +446,18 @@ export const Popup = () => {
 		resetDragState();
 	};
 
+	// Filter notes by search query
+	const filteredNotes = searchQuery.trim()
+		? copiedTexts.filter(
+				(note) =>
+					note.heading.toLowerCase().includes(searchQuery.toLowerCase()) ||
+					note.text.toLowerCase().includes(searchQuery.toLowerCase())
+			)
+		: copiedTexts;
+
 	// Split notes into pinned and unpinned
-	const pinnedNotes = copiedTexts.filter((note) => note.pinned);
-	const unpinnedNotes = copiedTexts.filter((note) => !note.pinned);
+	const pinnedNotes = filteredNotes.filter((note) => note.pinned);
+	const unpinnedNotes = filteredNotes.filter((note) => !note.pinned);
 
 	return (
 		<div className="popup-container">
@@ -509,10 +521,26 @@ export const Popup = () => {
 						<h2 className="pt-margin">Previous Texts</h2>
 						<button onClick={clearAll}>Clear All</button>
 					</div>
+					<div className="search-bar">
+						<input
+							type="text"
+							placeholder="Search notes..."
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+						/>
+						{searchQuery && (
+							<button className="search-clear-btn" onClick={() => setSearchQuery('')}>
+								✕
+							</button>
+						)}
+					</div>
 				</div>
 
 				{copiedTexts.length > 0 ? (
 					<div className="notes-container" ref={notesContainerRef}>
+						{filteredNotes.length === 0 && (
+							<p className="no-results">No notes match your search.</p>
+						)}
 						<div className="drag-mode-toggle">
 							<input
 								type="checkbox"
