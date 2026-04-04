@@ -498,18 +498,16 @@ $card-colors-dark: (
 	@each $i, $color in $card-colors-light {
 		:root:not(.dark-theme) &:nth-child(8n + #{$i}) {
 			background: $color;
-			border: 2px solid darken($color, 14%);
-			box-shadow: 3px 3px 0 darken($color, 20%);
+			border: 2px solid #1a1a2e;
+			box-shadow: 3px 3px 0 #1a1a2e;
 		}
 	}
 
 	@each $i, $color in $card-colors-dark {
 		:root.dark-theme &:nth-child(8n + #{$i}) {
 			background: $color;
-			border: 1.5px solid lighten($color, 38%);
-			box-shadow:
-				3px 3px 0 rgba(0, 0, 0, 0.6),
-				0 2px 10px rgba(0, 0, 0, 0.35);
+			border: 1.5px solid rgba(255, 255, 255, 0.45);
+			box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.18);
 		}
 	}
 
@@ -539,11 +537,12 @@ $card-colors-dark: (
 	&:hover {
 		transform: translateY(-3px) scale(1.008);
 
-		/* deepen shadow on hover per card color */
-		@each $i, $color in $card-colors-light {
-			:root:not(.dark-theme) &:nth-child(8n + #{$i}) {
-				box-shadow: 5px 5px 0 darken($color, 22%);
-			}
+		:root:not(.dark-theme) & {
+			box-shadow: 5px 5px 0 #1a1a2e;
+		}
+
+		:root.dark-theme & {
+			box-shadow: 5px 5px 0 rgba(255, 255, 255, 0.25);
 		}
 	}
 
