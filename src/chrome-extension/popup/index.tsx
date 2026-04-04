@@ -21,6 +21,9 @@ export const Popup = () => {
 	const [noteAdd, setNoteAdd] = useState('Add Note');
 	const [redColor, setRedColor] = useState('black');
 	const [isAddingNote, setIsAddingNote] = useState(false);
+	const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
+	const [isSearchSectionOpen, setIsSearchSectionOpen] = useState(false);
+	const [isDragSectionOpen, setIsDragSectionOpen] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	// Drag and drop state
@@ -28,7 +31,7 @@ export const Popup = () => {
 	const [isDragEnabled, setIsDragEnabled] = useState(false);
 	const [dragOverItem, setDragOverItem] = useState<string | null>(null);
 	const [dropPosition, setDropPosition] = useState<'before' | 'after' | null>(
-		null
+		null,
 	);
 
 	// Theme state
@@ -47,6 +50,7 @@ export const Popup = () => {
 
 	// Constants
 	const MAX_TEXT_LENGTH = 5000; // Set a reasonable limit
+	const BIG_NOTE_TEXT_THRESHOLD = 220;
 
 	// Clean up timeouts on unmount
 	useEffect(() => {
@@ -95,12 +99,29 @@ export const Popup = () => {
 
 	// Sort notes: pinned first, then unpinned
 	const sortNotesByPin = (notes: Note[]): Note[] => {
-		const pinned = notes.filter((n) => n.pinned).sort((a, b) => a.order - b.order);
+		const pinned = notes
+			.filter((n) => n.pinned)
+			.sort((a, b) => a.order - b.order);
 		const unpinned = notes
 			.filter((n) => !n.pinned)
 			.sort((a, b) => a.order - b.order);
 
 		return [...pinned, ...unpinned].map((note, index) => ({
+			...note,
+			order: index,
+		}));
+	};
+
+	// Stack behavior for new notes: newest unpinned note appears first
+	const addNoteInStackOrder = (notes: Note[], newNote: Note): Note[] => {
+		const pinned = notes
+			.filter((n) => n.pinned)
+			.sort((a, b) => a.order - b.order);
+		const unpinned = notes
+			.filter((n) => !n.pinned)
+			.sort((a, b) => a.order - b.order);
+
+		return [...pinned, newNote, ...unpinned].map((note, index) => ({
 			...note,
 			order: index,
 		}));
@@ -183,9 +204,9 @@ export const Popup = () => {
 				text: newText.trim(),
 				id: generateId(),
 				pinned: false,
-				order: copiedTexts.length,
+				order: 0,
 			};
-			const updatedNotes = sortNotesByPin([...copiedTexts, newNote]);
+			const updatedNotes = addNoteInStackOrder(copiedTexts, newNote);
 			saveNotes(updatedNotes);
 			setNoteAdd('Note Added!!! ⬇️');
 			addNoteTimeoutRef.current = window.setTimeout(() => {
@@ -219,7 +240,7 @@ export const Popup = () => {
 			chrome.storage.local.remove(['notes'], () => {
 				if (chrome.runtime.lastError) {
 					setError(
-						'Failed to clear notes: ' + chrome.runtime.lastError.message
+						'Failed to clear notes: ' + chrome.runtime.lastError.message,
 					);
 					return;
 				}
@@ -259,7 +280,7 @@ export const Popup = () => {
 					}));
 					// Clean up the timeout reference
 					delete copyTimeoutsRef.current[id];
-				}, 1000);
+				}, 2000);
 			})
 			.catch((err) => {
 				console.error('Failed to copy text: ', err);
@@ -294,7 +315,7 @@ export const Popup = () => {
 	// Toggle pin on a note
 	const togglePin = (id: string) => {
 		const updatedNotes = copiedTexts.map((note) =>
-			note.id === id ? { ...note, pinned: !note.pinned } : note
+			note.id === id ? { ...note, pinned: !note.pinned } : note,
 		);
 
 		const sortedNotes = sortNotesByPin(updatedNotes);
@@ -306,7 +327,7 @@ export const Popup = () => {
 		notes: Note[],
 		draggedId: string,
 		targetId: string,
-		position: 'before' | 'after' | null
+		position: 'before' | 'after' | null,
 	): Note[] => {
 		const draggedNote = notes.find((n) => n.id === draggedId);
 		const targetNote = notes.find((n) => n.id === targetId);
@@ -398,7 +419,10 @@ export const Popup = () => {
 	};
 
 	// Handle drag over
-	const handleDragOver = (e: React.DragEvent<HTMLDivElement>, targetId: string) => {
+	const handleDragOver = (
+		e: React.DragEvent<HTMLDivElement>,
+		targetId: string,
+	) => {
 		if (!isDragEnabled || !draggedItem) return;
 
 		e.preventDefault();
@@ -434,7 +458,7 @@ export const Popup = () => {
 			copiedTexts,
 			draggedItem,
 			targetId,
-			dropPosition
+			dropPosition,
 		);
 
 		// Update state (triggers re-render)
@@ -451,13 +475,19 @@ export const Popup = () => {
 		? copiedTexts.filter(
 				(note) =>
 					note.heading.toLowerCase().includes(searchQuery.toLowerCase()) ||
-					note.text.toLowerCase().includes(searchQuery.toLowerCase())
+					note.text.toLowerCase().includes(searchQuery.toLowerCase()),
 			)
 		: copiedTexts;
 
 	// Split notes into pinned and unpinned
 	const pinnedNotes = filteredNotes.filter((note) => note.pinned);
 	const unpinnedNotes = filteredNotes.filter((note) => !note.pinned);
+	const copyIconSrc =
+		theme === 'dark' ? 'public/white-copy.png' : 'public/black-copy.png';
+	const pinnedIconSrc =
+		theme === 'dark'
+			? 'public/white-pin-icon.png'
+			: 'public/black-pin-icon.png';
 
 	return (
 		<div className="popup-container">
@@ -483,77 +513,117 @@ export const Popup = () => {
 
 				{error && <div className="error-message">{error}</div>}
 
-				<br />
-				<div className="sub-heading">
-					<div className="pastehere">
-						<h2>Paste here</h2>
-						<button onClick={addNote} disabled={isAddingNote}>
-							{noteAdd}
-						</button>
-					</div>
-					<div className="paste-input">
-						<input
-							type="text"
-							placeholder="Give a heading"
-							value={newHeading}
-							onChange={(e) => setNewHeading(e.target.value)}
-							className={redColor === 'red' ? 'error' : ''}
-							maxLength={100} // Reasonable limit for headings
-						/>
-						<textarea
-							rows={3}
-							placeholder="Enter text here"
-							value={newText}
-							onChange={(e) => setNewText(e.target.value)}
-							className={redColor === 'red' ? 'error' : ''}
-							maxLength={MAX_TEXT_LENGTH}
-						/>
-						{newText && (
-							<div className="character-count">
-								{newText.length}/{MAX_TEXT_LENGTH}
-							</div>
-						)}
-					</div>
-				</div>
-				<br />
-				<div className="sub-heading">
-					<div className="sub-sub">
-						<h2 className="pt-margin">Previous Texts</h2>
-						<button onClick={clearAll}>Clear All</button>
-					</div>
-					<div className="search-bar">
-						<input
-							type="text"
-							placeholder="Search notes..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-						/>
-						{searchQuery && (
-							<button className="search-clear-btn" onClick={() => setSearchQuery('')}>
-								✕
-							</button>
-						)}
-					</div>
+				<div className="section-toggle-row">
+					<button
+						onClick={() => setIsAddSectionOpen((prev) => !prev)}
+						className="add-note-toggle-btn"
+						aria-expanded={isAddSectionOpen}
+						aria-controls="add-note-panel"
+					>
+						{isAddSectionOpen ? 'Close Add Note' : '+ Add Note'}
+					</button>
+					<button
+						onClick={() => setIsSearchSectionOpen((prev) => !prev)}
+						className="search-toggle-btn"
+						aria-expanded={isSearchSectionOpen}
+						aria-controls="search-panel"
+					>
+						{isSearchSectionOpen ? 'Close Search' : '+ Search'}
+					</button>
+					<button
+						onClick={() => setIsDragSectionOpen((prev) => !prev)}
+						className="drag-toggle-btn"
+						aria-expanded={isDragSectionOpen}
+						aria-controls="drag-panel"
+					>
+						{isDragSectionOpen ? 'Close Drag' : '+ Drag & Drop'}
+					</button>
 				</div>
 
-				{copiedTexts.length > 0 ? (
-					<div className="notes-container" ref={notesContainerRef}>
-						{filteredNotes.length === 0 && (
-							<p className="no-results">No notes match your search.</p>
-						)}
+				{isAddSectionOpen && (
+					<div className="sub-heading add-note-panel" id="add-note-panel">
+						<div className="pastehere">
+							<h2>Paste here</h2>
+							<button onClick={addNote} disabled={isAddingNote}>
+								{noteAdd}
+							</button>
+						</div>
+						<div className="paste-input">
+							<input
+								type="text"
+								placeholder="Give a heading"
+								value={newHeading}
+								onChange={(e) => setNewHeading(e.target.value)}
+								className={redColor === 'red' ? 'error' : ''}
+								maxLength={100} // Reasonable limit for headings
+							/>
+							<textarea
+								rows={3}
+								placeholder="Enter text here"
+								value={newText}
+								onChange={(e) => setNewText(e.target.value)}
+								className={redColor === 'red' ? 'error' : ''}
+								maxLength={MAX_TEXT_LENGTH}
+							/>
+							{newText && (
+								<div className="character-count">
+									{newText.length}/{MAX_TEXT_LENGTH}
+								</div>
+							)}
+						</div>
+					</div>
+				)}
+				{isSearchSectionOpen && (
+					<div className="sub-heading search-panel" id="search-panel">
+						<div className="sub-sub">
+							<h2 className="pt-margin">Previous Texts</h2>
+							<button onClick={clearAll}>Clear All</button>
+						</div>
+						<div className="search-bar">
+							<input
+								type="text"
+								placeholder="Search notes..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+							/>
+							{searchQuery && (
+								<button
+									className="search-clear-btn"
+									onClick={() => setSearchQuery('')}
+								>
+									✕
+								</button>
+							)}
+						</div>
+					</div>
+				)}
+
+				{isDragSectionOpen && (
+					<div className="drag-panel" id="drag-panel">
 						<div className="drag-mode-toggle">
 							<input
 								type="checkbox"
 								id="drag-mode"
 								checked={isDragEnabled}
 								onChange={toggleDragMode}
+								disabled={copiedTexts.length === 0}
 							/>
 							<label htmlFor="drag-mode">
-								{isDragEnabled
-									? 'Drag mode enabled - Reorder by dragging'
-									: 'Enable drag mode to reorder notes'}
+								{copiedTexts.length === 0
+									? 'No notes to reorder yet'
+									: isDragEnabled
+										? 'Drag mode enabled - Reorder by dragging'
+										: 'Enable drag mode to reorder notes'}
 							</label>
 						</div>
+					</div>
+				)}
+
+				{copiedTexts.length > 0 ? (
+					<div className="notes-container" ref={notesContainerRef}>
+						{filteredNotes.length === 0 && (
+							<p className="no-results">No notes match your search.</p>
+						)}
 
 						{/* Pinned Notes Section */}
 						{pinnedNotes.length > 0 && (
@@ -564,6 +634,8 @@ export const Popup = () => {
 										data-note-id={note.id}
 										className={`copied-text pinned ${
 											draggedItem === note.id ? 'dragging' : ''
+										} ${
+											copiedStates[note.id] ? 'copy-blink' : ''
 										} ${dragOverItem === note.id ? 'drag-over' : ''} ${
 											dragOverItem === note.id && dropPosition === 'before'
 												? 'drop-indicator-before'
@@ -580,9 +652,6 @@ export const Popup = () => {
 										onDrop={(e) => handleDrop(e, note.id)}
 									>
 										<div className="copy-here">
-											<span className="pin-icon" role="img" aria-label="Pinned">
-												📌
-											</span>
 											<p>{note.heading}</p>
 											<div className="button-group">
 												<button
@@ -591,26 +660,50 @@ export const Popup = () => {
 													disabled={isDragEnabled}
 													title="Unpin this note"
 												>
-													UNPIN
+													<img
+														src={pinnedIconSrc}
+														className="pin-icon-img"
+														alt="pin"
+													/>
 												</button>
 												<button
 													onClick={() => copyToClipboard(note.text, note.id)}
 													className={`copy-btn ${
 														copiedStates[note.id] ? 'copied' : ''
 													}`}
+													title="Copy note"
 												>
-													{copiedStates[note.id] ? 'Copied!' : 'Copy'}
+													<img
+														src={copyIconSrc}
+														className="copy-icon-img"
+														alt={copiedStates[note.id] ? 'copied' : 'copy'}
+													/>
 												</button>
 												<button
 													onClick={() => deleteNote(note.id)}
 													className="delete-btn"
+													title="Delete note"
 												>
-													Delete
+													<img
+														src="public/delete.png"
+														className="delete-icon-img"
+														alt="delete"
+													/>
 												</button>
 											</div>
 										</div>
 										<div className="paste-input">
-											<textarea rows={2} value={note.text} readOnly />
+											<textarea
+												rows={2}
+												value={note.text}
+												readOnly
+												className={
+													note.text.length > BIG_NOTE_TEXT_THRESHOLD
+														? 'big-text'
+														: ''
+												}
+												style={{ resize: 'vertical' }}
+											/>
 										</div>
 									</div>
 								))}
@@ -630,6 +723,8 @@ export const Popup = () => {
 								data-note-id={note.id}
 								className={`copied-text ${
 									draggedItem === note.id ? 'dragging' : ''
+								} ${
+									copiedStates[note.id] ? 'copy-blink' : ''
 								} ${dragOverItem === note.id ? 'drag-over' : ''} ${
 									dragOverItem === note.id && dropPosition === 'before'
 										? 'drop-indicator-before'
@@ -654,26 +749,50 @@ export const Popup = () => {
 											disabled={isDragEnabled}
 											title="Pin this note to the top"
 										>
-											PIN
+											<img
+												src="public/black-pin-icon.png"
+												className="pin-icon-img"
+												alt="pin"
+											/>
 										</button>
 										<button
 											onClick={() => copyToClipboard(note.text, note.id)}
 											className={`copy-btn ${
 												copiedStates[note.id] ? 'copied' : ''
 											}`}
+											title="Copy note"
 										>
-											{copiedStates[note.id] ? 'Copied!' : 'Copy'}
+											<img
+												src={copyIconSrc}
+												className="copy-icon-img"
+												alt={copiedStates[note.id] ? 'copied' : 'copy'}
+											/>
 										</button>
 										<button
 											onClick={() => deleteNote(note.id)}
 											className="delete-btn"
+											title="Delete note"
 										>
-											Delete
+											<img
+												src="public/delete.png"
+												className="delete-icon-img"
+												alt="delete"
+											/>
 										</button>
 									</div>
 								</div>
 								<div className="paste-input">
-									<textarea rows={2} value={note.text} readOnly />
+									<textarea
+										rows={2}
+										value={note.text}
+										readOnly
+										className={
+											note.text.length > BIG_NOTE_TEXT_THRESHOLD
+												? 'big-text'
+												: ''
+										}
+										style={{ resize: 'vertical' }}
+									/>
 								</div>
 							</div>
 						))}
