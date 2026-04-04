@@ -72,6 +72,17 @@ const Options = () => {
 		}
 	};
 
+	const downloadAsJson = () => {
+		const data = JSON.stringify(notes, null, 2);
+		const blob = new Blob([data], { type: 'application/json' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `nostalgia-notes-${new Date().toISOString().slice(0, 10)}.json`;
+		a.click();
+		URL.revokeObjectURL(url);
+	};
+
 	const filteredNotes = searchQuery.trim()
 		? notes.filter(
 				(n) =>
@@ -150,20 +161,30 @@ const Options = () => {
 						<span className="section-badge">📋</span>
 						<h2 className="section-title">All Your Notes</h2>
 					</div>
-					<div className="search-wrap">
-						<span className="search-icon">🔍</span>
-						<input
-							type="text"
-							className="options-search"
-							placeholder="Search notes..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-						/>
-						{searchQuery && (
-							<button className="search-clear" onClick={() => setSearchQuery('')}>
-								✕
-							</button>
-						)}
+					<div className="section-actions">
+						<button
+							className="cartoon-btn download-btn"
+							onClick={downloadAsJson}
+							disabled={notes.length === 0}
+							title="Download all notes as JSON"
+						>
+							⬇️ Export JSON
+						</button>
+						<div className="search-wrap">
+							<span className="search-icon">🔍</span>
+							<input
+								type="text"
+								className="options-search"
+								placeholder="Search notes..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+							/>
+							{searchQuery && (
+								<button className="search-clear" onClick={() => setSearchQuery('')}>
+									✕
+								</button>
+							)}
+						</div>
 					</div>
 				</div>
 

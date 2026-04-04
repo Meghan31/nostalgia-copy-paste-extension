@@ -482,6 +482,29 @@ body {
 	}
 }
 
+/* Section actions group (download + search) */
+.section-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+/* Download button */
+.cartoon-btn.download-btn {
+	background: #ffe066;
+	color: #1a1a2e;
+
+	&:hover:not(:disabled) {
+		background: #ffd000;
+	}
+
+	&:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+}
+
 /* Search */
 .search-wrap {
 	display: flex;

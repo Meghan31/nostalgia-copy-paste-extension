@@ -1,90 +1,144 @@
-/* ========================================
-   Popup Container (Scrollable Content Area)
-   ======================================== */
+/* ============================================================
+   POPUP — FULL CHARM REDESIGN 🎨
+   Colorful sticky notes · vivid gradients · zero wasted space
+   ============================================================ */
+
+/* ── Card colour palette ────────────────────────────────────── */
+$card-colors-light: (
+	1: #fff9c4,
+	2: #ffd6e0,
+	3: #c8f7c5,
+	4: #ffdab9,
+	5: #e8d5ff,
+	6: #c5e8ff,
+	7: #ffd6c8,
+	8: #d5ffe8,
+);
+
+$card-accent-light: (
+	1: #f7c948,
+	2: #f06292,
+	3: #43d68a,
+	4: #f7971e,
+	5: #9b72ef,
+	6: #29b6f6,
+	7: #ff7043,
+	8: #26c6a0,
+);
+
+$card-colors-dark: (
+	1: #4b3b10,
+	// warm amber
+	2: #4a1832,
+	// deep rose
+	3: #143f2a,
+	// rich emerald
+	4: #4a2b12,
+	// burnt orange
+	5: #2f1a4d,
+	// deep violet
+	6: #123a57,
+	// sapphire blue
+	7: #5a2415,
+	// deep red-orange
+	8: #1a4a39, // dark jade
+);
+
+/* ============================================================
+   POPUP CONTAINER — zero-gap, full bleed
+   ============================================================ */
 .popup-container {
-	/* Fill the #root rounded surface */
 	width: 100%;
 	height: 100%;
-	background: var(--bg-primary);
 	box-sizing: border-box;
-	/* Scroll happens here - #root clips the corners */
 	overflow-y: auto;
 	overflow-x: hidden;
+
+	/* dark mode: deep purple-navy gradient */
+	background: linear-gradient(160deg, #1a0f3d 0%, #0d1528 40%, #1a0a2e 100%);
+
+	:root:not(.dark-theme) & {
+		background: linear-gradient(160deg, #f0f4ff 0%, #e8f0fe 50%, #f5f0ff 100%);
+	}
 }
 
-/* ========================================
-   Header Section
-   ======================================== */
+/* ============================================================
+   HEADER WRAPPER — tight padding, full width
+   ============================================================ */
 .header {
 	display: flex;
 	flex-direction: column;
-	gap: var(--spacing-sm);
-	padding: var(--spacing-sm) var(--spacing-sm) 2px 2px;
-	/* Ensure header respects container width */
+	gap: 5px;
+	padding: 6px 6px 6px 6px;
 	max-width: 100%;
 	box-sizing: border-box;
 
+	/* ── Title bar ─────────────────────────────────────────── */
 	.title {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--spacing-sm);
-		padding: var(--spacing-xs) var(--spacing-md);
-		background: var(--bg-card);
-		border-radius: var(--border-radius-lg);
-		border: 1px solid var(--bg-card-border);
-		box-shadow: var(--shadow-sm);
-		transition: box-shadow 0.3s ease;
+		gap: 6px;
+		padding: 6px 10px;
+		background: transparent;
+		border-radius: 0;
+		border: none;
+		border-bottom: 2px solid #e2e8f0;
+		box-shadow: none;
 
-		&:hover {
-			box-shadow: var(--shadow-md);
+		:root.dark-theme & {
+			border-bottom-color: #334155;
 		}
 
 		.heading {
 			display: flex;
 			align-items: center;
-			gap: var(--spacing-sm);
+			gap: 7px;
 			flex: 1;
-			/* Allow heading to shrink */
 			min-width: 0;
 
 			img {
-				width: 32px;
-				height: 32px;
+				width: 22px;
+				height: 22px;
 				flex-shrink: 0;
+				border-radius: 6px;
 			}
 
 			h1 {
-				color: var(--text-primary);
-				font-size: 1rem;
-				font-weight: 700;
+				color: #1a1a2e;
+				font-size: 0.82rem;
+				font-weight: 900;
 				margin: 0;
-				text-shadow: none;
-				/* Allow h1 to shrink if needed */
+				letter-spacing: 1.5px;
+				text-transform: uppercase;
 				min-width: 0;
 				overflow: hidden;
 				text-overflow: ellipsis;
 				white-space: nowrap;
+
+				:root.dark-theme & {
+					color: #f1f5f9;
+				}
 			}
 		}
 	}
 
-	/* Error Message */
+	/* ── Error message ─────────────────────────────────────── */
 	.error-message {
-		background: var(--danger);
+		background: linear-gradient(135deg, #ff6b6b, #ee0979);
 		color: white;
-		padding: var(--spacing-md);
-		border-radius: var(--border-radius-md);
-		font-size: 0.875rem;
-		font-weight: 500;
-		box-shadow: var(--shadow-md);
+		padding: 7px 11px;
+		border-radius: 8px;
+		font-size: 0.72rem;
+		font-weight: 700;
+		box-shadow: 0 4px 12px rgba(238, 9, 121, 0.35);
 		animation: slideIn 0.3s ease;
 	}
 
 	@keyframes slideIn {
 		from {
 			opacity: 0;
-			transform: translateY(-10px);
+			transform: translateY(-6px);
 		}
 		to {
 			opacity: 1;
@@ -92,488 +146,572 @@
 		}
 	}
 
-	/* Input Section */
+	/* ── Three action pill buttons ─────────────────────────── */
 	.section-toggle-row {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
-		gap: var(--spacing-sm);
+		align-items: stretch;
+		gap: 4px;
 		flex-wrap: nowrap;
-		margin-top: var(--spacing-sm);
 
 		.add-note-toggle-btn,
 		.search-toggle-btn,
 		.drag-toggle-btn {
 			flex: 1 1 0;
-			padding: 6px 8px;
-			font-size: 0.68rem;
+			padding: 8px 4px;
+			font-size: 0.63rem;
+			font-weight: 900;
 			line-height: 1;
 			text-align: center;
 			white-space: nowrap;
-			border-radius: var(--border-radius-sm);
-			background: var(--bg-card);
-			border: 1px solid var(--bg-card-border);
-			color: var(--text-secondary);
-			box-shadow: none;
+			border-radius: 999px;
+			border: 2.5px solid #1a1a2e;
+			letter-spacing: 0.2px;
+			cursor: pointer;
+			transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+			box-sizing: border-box;
+			color: #1a1a2e;
 
-			&:hover:not(:disabled) {
-				background: var(--bg-secondary);
-				border-color: var(--accent-primary);
-				color: var(--text-primary);
-				box-shadow: none;
+			&:not(:disabled):hover {
+				transform: translateY(-3px);
+				box-shadow: 4px 4px 0 #1a1a2e;
 			}
+
+			&:not(:disabled):active {
+				transform: translateY(1px);
+				box-shadow: 1px 1px 0 #1a1a2e;
+			}
+		}
+
+		.add-note-toggle-btn {
+			background: #b8f0d8;
+			box-shadow: 3px 3px 0 #1a1a2e;
+		}
+
+		.search-toggle-btn {
+			background: #d4caff;
+			box-shadow: 3px 3px 0 #1a1a2e;
+		}
+
+		.drag-toggle-btn {
+			background: #ffe566;
+			box-shadow: 3px 3px 0 #1a1a2e;
 		}
 	}
 
 	.add-note-panel,
 	.search-panel,
 	.drag-panel {
-		margin-top: var(--spacing-xs);
+		margin-top: 0;
 	}
 
+	/* ── Expandable panels ─────────────────────────────────── */
 	.sub-heading {
 		width: 100%;
-		background: var(--bg-card);
-		border-radius: var(--border-radius-md);
-		padding: var(--spacing-sm) var(--spacing-md);
-		border: 1px solid var(--bg-card-border);
-		box-shadow: var(--shadow-sm);
-		transition: box-shadow 0.3s ease;
+		background: rgba(255, 255, 255, 0.07);
+		border-radius: 10px;
+		padding: 10px 11px;
+		border: 1.5px solid rgba(255, 255, 255, 0.18);
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+		position: relative;
+		overflow: hidden;
+		box-sizing: border-box;
 
-		&:hover {
-			box-shadow: var(--shadow-md);
+		:root:not(.dark-theme) & {
+			background: rgba(255, 255, 255, 0.85);
+			border-color: rgba(102, 126, 234, 0.2);
+			box-shadow: 0 2px 12px rgba(102, 126, 234, 0.12);
+		}
+
+		/* left stripe */
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			width: 4px;
+			border-radius: 10px 0 0 10px;
+		}
+
+		&.add-note-panel::before {
+			background: linear-gradient(180deg, #43e97b, #38f9d7);
+		}
+
+		&.search-panel::before {
+			background: linear-gradient(180deg, #667eea, #764ba2);
 		}
 
 		.pastehere {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			margin-bottom: var(--spacing-md);
+			margin-bottom: 8px;
 
 			h2 {
-				font-size: 0.9rem;
-				font-weight: 600;
-				color: var(--text-primary);
+				font-size: 0.78rem;
+				font-weight: 800;
+				color: white;
 				margin: 0;
+				letter-spacing: 0.4px;
+
+				:root:not(.dark-theme) & {
+					color: #1a1a2e;
+				}
 			}
 		}
 
 		.paste-input {
 			display: flex;
 			flex-direction: column;
-			gap: var(--spacing-sm);
+			gap: 6px;
 
 			input,
 			textarea {
 				width: 100%;
-				padding: var(--spacing-md);
-				background: var(--bg-input);
-				border: 1px solid var(--bg-card-border);
-				border-radius: var(--border-radius-sm);
-				color: var(--text-primary);
+				padding: 7px 10px;
+				background: rgba(255, 255, 255, 0.07);
+				border: 1.5px solid rgba(255, 255, 255, 0.15);
+				border-radius: 7px;
+				color: white;
 				font-family:
 					system-ui,
 					-apple-system,
 					sans-serif;
-				font-size: 0.8rem;
+				font-size: 0.77rem;
 				transition: all 0.2s ease;
+				box-sizing: border-box;
+
+				:root:not(.dark-theme) & {
+					background: #f8fafc;
+					border-color: #cbd5e1;
+					color: #1e293b;
+				}
 
 				&:focus {
 					outline: none;
-					border-color: var(--accent-primary);
-					box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+					border-color: #667eea;
+					box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+					background: rgba(255, 255, 255, 0.1);
+
+					:root:not(.dark-theme) & {
+						background: white;
+					}
 				}
 
 				&::placeholder {
-					color: var(--text-tertiary);
+					color: rgba(255, 255, 255, 0.4);
+
+					:root:not(.dark-theme) & {
+						color: #94a3b8;
+					}
 				}
 
 				&.error {
-					border-color: var(--danger);
-					color: var(--danger);
+					border-color: #ff6b6b;
+					animation: shake 0.3s ease;
 				}
 			}
 
 			textarea {
 				resize: vertical;
-				min-height: 70px;
+				min-height: 64px;
 				line-height: 1.5;
 			}
 
 			.character-count {
-				font-size: 0.75rem;
-				color: var(--text-tertiary);
+				font-size: 0.62rem;
+				color: rgba(255, 255, 255, 0.45);
 				text-align: right;
-				margin-top: calc(var(--spacing-xs) * -1);
+				margin-top: -3px;
+				font-weight: 600;
+
+				:root:not(.dark-theme) & {
+					color: #94a3b8;
+				}
 			}
 		}
 
 		.search-bar {
 			position: relative;
-			margin-top: var(--spacing-md);
+			margin-top: 8px;
 
 			input {
 				width: 100%;
-				padding: var(--spacing-sm) var(--spacing-md);
-				padding-right: 2rem;
-				background: var(--bg-input);
-				border: 1px solid var(--bg-card-border);
-				border-radius: var(--border-radius-sm);
-				color: var(--text-primary);
+				padding: 7px 28px 7px 10px;
+				background: rgba(255, 255, 255, 0.07);
+				border: 1.5px solid rgba(255, 255, 255, 0.15);
+				border-radius: 7px;
+				color: white;
 				font-family:
 					system-ui,
 					-apple-system,
 					sans-serif;
-				font-size: 0.8rem;
+				font-size: 0.77rem;
 				transition: all 0.2s ease;
 				box-sizing: border-box;
 
+				:root:not(.dark-theme) & {
+					background: #f8fafc;
+					border-color: #cbd5e1;
+					color: #1e293b;
+				}
+
 				&:focus {
 					outline: none;
-					border-color: var(--accent-primary);
-					box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+					border-color: #667eea;
+					box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
 				}
 
 				&::placeholder {
-					color: var(--text-tertiary);
+					color: rgba(255, 255, 255, 0.35);
+
+					:root:not(.dark-theme) & {
+						color: #94a3b8;
+					}
 				}
 			}
 
 			.search-clear-btn {
 				position: absolute;
-				right: var(--spacing-sm);
+				right: 7px;
 				top: 50%;
 				transform: translateY(-50%);
-				background: transparent;
+				background: rgba(255, 255, 255, 0.15);
 				border: none;
-				color: var(--text-tertiary);
-				font-size: 0.75rem;
+				color: white;
+				font-size: 0.58rem;
+				font-weight: 800;
 				cursor: pointer;
-				padding: 0;
+				width: 16px;
+				height: 16px;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 				line-height: 1;
 				box-shadow: none;
+				padding: 0;
+				transition: all 0.15s ease;
+
+				:root:not(.dark-theme) & {
+					background: #e2e8f0;
+					color: #64748b;
+				}
 
 				&:hover {
-					color: var(--text-primary);
-					transform: translateY(-50%);
+					background: #ff6b6b;
+					color: white;
+					transform: translateY(-50%) scale(1.15);
 					box-shadow: none;
 				}
 			}
 		}
 
 		.pt-margin {
-			margin-top: var(--spacing-md);
+			margin-top: 6px;
 		}
 
-		/* Section Header with Buttons */
 		.sub-sub {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			margin-bottom: var(--spacing-md);
+			margin-bottom: 8px;
 
 			h2 {
-				font-size: 0.9rem;
-				font-weight: 600;
-				color: var(--text-primary);
+				font-size: 0.78rem;
+				font-weight: 800;
+				color: white;
 				margin: 0;
+
+				:root:not(.dark-theme) & {
+					color: #1a1a2e;
+				}
 			}
 		}
 	}
 }
 
-/* ========================================
-   Note Cards
-   ======================================== */
-.header .copied-text {
-	width: 100%;
-	background: var(--bg-card);
-	border: 1px solid var(--bg-card-border);
-	border-radius: var(--border-radius-md);
-	padding: var(--spacing-sm) var(--spacing-md);
-	margin-bottom: 0.7cm;
-	box-shadow: var(--shadow-sm);
-	transition: all 0.3s ease;
+/* ── Drag mode panel ─────────────────────────────────────────── */
+.drag-mode-toggle {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	padding: 8px 11px;
+	background: rgba(247, 151, 30, 0.18);
+	border: 1.5px solid rgba(247, 151, 30, 0.5);
+	border-radius: 9px;
+	margin-bottom: 5px;
+	box-shadow: 0 2px 8px rgba(247, 151, 30, 0.2);
 
-	&:hover {
-		box-shadow: var(--shadow-md);
-		transform: translateY(-1px);
+	:root:not(.dark-theme) & {
+		background: #fff9db;
+		border-color: #f7971e44;
 	}
 
+	input[type='checkbox'] {
+		width: 15px;
+		height: 15px;
+		cursor: pointer;
+		accent-color: #f7971e;
+		flex-shrink: 0;
+	}
+
+	label {
+		font-size: 0.68rem;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.75);
+		cursor: pointer;
+		user-select: none;
+
+		:root:not(.dark-theme) & {
+			color: #92400e;
+		}
+	}
+}
+
+/* ============================================================
+   NOTES CONTAINER
+   ============================================================ */
+.notes-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+/* ============================================================
+   NOTE CARDS — colorful sticky note style
+   ============================================================ */
+.header .copied-text {
+	width: 100%;
+	border-radius: 10px;
+	padding: 9px 10px 8px;
+	margin-bottom: 5px;
+	position: relative;
+	overflow: hidden;
+	box-sizing: border-box;
+	transition:
+		transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1),
+		box-shadow 0.2s ease;
+
+	/* ── Colorful backgrounds cycling 8 colors ─────────────── */
+	@each $i, $color in $card-colors-light {
+		:root:not(.dark-theme) &:nth-child(8n + #{$i}) {
+			background: $color;
+			border: 2px solid darken($color, 14%);
+			box-shadow: 3px 3px 0 darken($color, 20%);
+		}
+	}
+
+	@each $i, $color in $card-colors-dark {
+		:root.dark-theme &:nth-child(8n + #{$i}) {
+			background: $color;
+			border: 1.5px solid lighten($color, 38%);
+			box-shadow:
+				3px 3px 0 rgba(0, 0, 0, 0.6),
+				0 2px 10px rgba(0, 0, 0, 0.35);
+		}
+	}
+
+	/* coloured top strip with accent per card */
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 4px;
+		border-radius: 10px 10px 0 0;
+	}
+
+	@each $i, $color in $card-accent-light {
+		:root:not(.dark-theme) &:nth-child(8n + #{$i})::before {
+			background: $color;
+		}
+	}
+
+	@each $i, $color in $card-accent-light {
+		:root.dark-theme &:nth-child(8n + #{$i})::before {
+			background: lighten($color, 10%);
+		}
+	}
+
+	&:hover {
+		transform: translateY(-3px) scale(1.008);
+
+		/* deepen shadow on hover per card color */
+		@each $i, $color in $card-colors-light {
+			:root:not(.dark-theme) &:nth-child(8n + #{$i}) {
+				box-shadow: 5px 5px 0 darken($color, 22%);
+			}
+		}
+	}
+
+	/* drag states */
 	&[draggable='true'] {
 		cursor: move;
 	}
 
 	&.dragging {
-		opacity: 0.5;
-		transform: scale(0.98);
-		box-shadow: var(--shadow-lg);
-		border-left: 4px solid var(--accent-primary);
-		background: var(--bg-secondary);
-		cursor: grabbing;
+		opacity: 0.4;
+		transform: scale(0.96) rotate(-1deg);
+		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35) !important;
 		z-index: 1000;
 	}
 
 	&.drag-over {
-		background: var(--bg-secondary);
-		border-color: var(--accent-primary);
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+		outline: 2px dashed #667eea;
+		outline-offset: 2px;
 	}
 
 	&.copy-blink {
-		animation: copyBlink 0.25s ease-in-out 8;
+		animation: copyBlink 0.22s ease-in-out 6;
 	}
 
-	&.drop-indicator-before::before {
+	/* drop indicators */
+	&.drop-indicator-before::after {
 		content: '';
 		position: absolute;
-		top: -2px;
+		top: -3px;
 		left: 0;
 		right: 0;
 		height: 3px;
-		background: var(--accent-primary);
-		border-radius: var(--border-radius-full);
-		box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-		animation: dropLinePulse 0.6s ease-in-out infinite;
+		background: linear-gradient(90deg, #667eea, #f093fb);
+		border-radius: 9999px;
+		animation: dropPulse 0.5s ease-in-out infinite;
 		z-index: 10;
 	}
 
 	&.drop-indicator-after::after {
 		content: '';
 		position: absolute;
-		bottom: -2px;
+		bottom: -3px;
 		left: 0;
 		right: 0;
 		height: 3px;
-		background: var(--accent-primary);
-		border-radius: var(--border-radius-full);
-		box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-		animation: dropLinePulse 0.6s ease-in-out infinite;
+		background: linear-gradient(90deg, #667eea, #f093fb);
+		border-radius: 9999px;
+		animation: dropPulse 0.5s ease-in-out infinite;
 		z-index: 10;
 	}
 
+	/* ── PINNED overrides ────────────────────────────────────── */
 	&.pinned {
-		border-left: 4px solid var(--accent-primary);
-		background: linear-gradient(
-			to right,
-			rgba(59, 130, 246, 0.05) 0%,
-			var(--bg-card) 20%
-		);
+		background: linear-gradient(135deg, #fff8e1, #ffe0b2) !important;
+		border: 2px solid #f7971e !important;
+		box-shadow: 3px 3px 0 rgba(247, 151, 30, 0.4) !important;
+
+		:root.dark-theme & {
+			background: linear-gradient(135deg, #2c1c00, #3d2800) !important;
+			border-color: rgba(247, 151, 30, 0.75) !important;
+			box-shadow:
+				3px 3px 0 rgba(247, 151, 30, 0.3),
+				0 2px 10px rgba(0, 0, 0, 0.4) !important;
+		}
+
+		&::before {
+			background: linear-gradient(90deg, #f7971e, #ffd200) !important;
+		}
+
+		&:hover {
+			box-shadow: 5px 5px 0 rgba(247, 151, 30, 0.55) !important;
+		}
 	}
 
+	/* ── Copy-here row ─────────────────────────────────────── */
 	.copy-here {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: var(--spacing-sm);
-		margin-bottom: var(--spacing-xs);
-
-		.pin-icon {
-			font-size: 1rem;
-			color: var(--accent-primary);
-			flex-shrink: 0;
-			line-height: 1;
-			/* Position icon cleanly before title */
-			display: inline-flex;
-			align-items: center;
-		}
+		gap: 5px;
+		margin-bottom: 6px;
+		margin-top: 2px; /* clear the top stripe */
 
 		p {
-			font-weight: 600;
-			color: var(--text-primary);
+			font-weight: 800;
+			color: #1a1a2e;
 			margin: 0;
-			/* CRITICAL: Allow title to shrink, prevents width expansion */
 			flex: 1 1 auto;
 			min-width: 0;
-			font-size: 0.8rem;
+			font-size: 0.78rem;
 			line-height: 1.4;
-			/* Single-line ellipsis (more reliable than -webkit-box in flex) */
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+
+			:root.dark-theme & {
+				color: #e2e8f0;
+			}
 		}
 
 		.button-group {
 			display: flex;
-			gap: var(--spacing-sm);
-			/* Lock button size, prevent expansion */
+			gap: 4px;
 			flex-shrink: 0;
 			flex-wrap: nowrap;
+			align-items: center;
 		}
 	}
 
+	/* ── Textarea ──────────────────────────────────────────── */
 	.paste-input textarea {
 		width: 100%;
-		padding: var(--spacing-md);
-		background: var(--bg-input);
-		border: 1px solid var(--bg-card-border);
-		border-radius: var(--border-radius-sm);
-		color: var(--text-primary);
+		padding: 7px 9px;
+		background: rgba(255, 255, 255, 0.55);
+		border: 1.5px solid rgba(0, 0, 0, 0.12);
+		border-radius: 7px;
+		color: #1a1a2e;
 		resize: vertical;
-		min-height: 48px;
-		font-size: 0.8rem;
+		min-height: 44px;
+		font-size: 0.76rem;
 		line-height: 1.5;
 		font-family:
 			system-ui,
 			-apple-system,
 			sans-serif;
-		transition: all 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease,
+			background 0.2s ease;
+		box-sizing: border-box;
+
+		:root.dark-theme & {
+			background: rgba(255, 255, 255, 0.1);
+			border-color: rgba(255, 255, 255, 0.22);
+			color: #e8edf5;
+		}
 
 		&:focus {
 			outline: none;
-			border-color: var(--accent-primary);
-			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+			border-color: #667eea;
+			box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.22);
+			background: rgba(255, 255, 255, 0.75);
+
+			:root.dark-theme & {
+				background: rgba(255, 255, 255, 0.12);
+			}
 		}
 
 		&.big-text {
-			min-height: 4cm;
+			min-height: 90px;
 		}
 	}
 }
 
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
 @keyframes copyBlink {
 	0%,
 	100% {
 		opacity: 1;
 	}
 	50% {
-		opacity: 0.35;
-	}
-}
-
-/* ========================================
-   Search No Results
-   ======================================== */
-.no-results {
-	text-align: center;
-	color: var(--text-tertiary);
-	font-size: 0.875rem;
-	padding: var(--spacing-lg) 0;
-	margin: 0;
-}
-
-/* ========================================
-   Drag Mode Toggle
-   ======================================== */
-.drag-mode-toggle {
-	display: flex;
-	align-items: center;
-	gap: var(--spacing-sm);
-	padding: var(--spacing-md);
-	background: var(--bg-card);
-	border: 1px solid var(--bg-card-border);
-	border-radius: var(--border-radius-md);
-	margin-bottom: var(--spacing-md);
-
-	input[type='checkbox'] {
-		width: 18px;
-		height: 18px;
-		cursor: pointer;
-		accent-color: var(--accent-primary);
-	}
-
-	label {
-		font-size: 0.75rem;
-		font-weight: 500;
-		color: var(--text-secondary);
-		cursor: pointer;
-		user-select: none;
-	}
-}
-
-/* ========================================
-   Pin Button
-   ======================================== */
-.pin-icon-img {
-	width: 16px;
-	height: 16px;
-	object-fit: contain;
-	display: block;
-	opacity: 0.7;
-	transition: opacity 0.2s ease;
-}
-
-.copy-icon-img,
-.delete-icon-img {
-	width: 16px;
-	height: 16px;
-	object-fit: contain;
-	display: block;
-	opacity: 0.8;
-	transition: opacity 0.2s ease;
-}
-
-.pin-btn {
-	background: transparent;
-	color: var(--text-tertiary);
-	border: none;
-	padding: 0;
-	width: 20px;
-	height: 20px;
-	border-radius: 0;
-	font-size: 0.85rem;
-	cursor: pointer;
-	transition: all 0.2s ease;
-	white-space: nowrap;
-	opacity: 1;
-	flex-shrink: 0;
-
-	&:hover:not(:disabled) {
-		background: transparent;
-		transform: none;
-
-		.pin-icon-img {
-			opacity: 1;
-		}
-	}
-
-	&:disabled {
 		opacity: 0.25;
-		cursor: not-allowed;
-	}
-
-	&.pinned {
-		opacity: 1;
-		background: transparent;
-		border: none;
-
-		.pin-icon-img {
-			opacity: 1;
-		}
-
-		&:hover:not(:disabled) {
-			background: transparent;
-		}
 	}
 }
 
-/* ========================================
-   Section Divider
-   ======================================== */
-.notes-section-divider {
-	display: flex;
-	align-items: center;
-	gap: var(--spacing-md);
-	margin: var(--spacing-lg) 0;
-	color: var(--text-tertiary);
-	font-size: 0.75rem;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-
-	&::before,
-	&::after {
-		content: '';
-		flex: 1;
-		height: 1px;
-		background: var(--bg-card-border);
-	}
-}
-
-/* ========================================
-   Drop Line Animation
-   ======================================== */
-@keyframes dropLinePulse {
+@keyframes dropPulse {
 	0%,
 	100% {
 		opacity: 0.6;
@@ -581,235 +719,405 @@
 	}
 	50% {
 		opacity: 1;
-		transform: scaleY(1.2);
+		transform: scaleY(1.5);
 	}
 }
 
-/* ========================================
-   Theme Toggle
-   ======================================== */
-.theme-toggle {
-	.theme-toggle-btn {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-sm);
-		background: transparent;
-		border: 1px solid var(--bg-card-border);
-		padding: var(--spacing-xs) var(--spacing-md);
-		border-radius: var(--border-radius-full);
-		cursor: pointer;
-		transition: all 0.3s ease;
-
-		&:hover {
-			background: var(--bg-secondary);
-			border-color: var(--accent-primary);
-		}
-
-		&:active {
-			transform: scale(0.98);
-		}
+@keyframes logoPop {
+	0%,
+	100% {
+		transform: rotate(-3deg) scale(1);
 	}
-
-	.theme-label {
-		font-size: 0.65rem;
-		font-weight: 600;
-		color: var(--text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-
-	.toggle-switch {
-		width: 36px;
-		height: 18px;
-		background: var(--bg-input);
-		border-radius: var(--border-radius-full);
-		position: relative;
-		transition: background 0.3s ease;
-
-		.toggle-slider {
-			width: 14px;
-			height: 14px;
-			background: var(--accent-primary);
-			border-radius: 50%;
-			position: absolute;
-			top: 2px;
-			left: 2px;
-			transition: transform 0.3s ease;
-			box-shadow: var(--shadow-sm);
-		}
-	}
-
-	.dark-theme & .toggle-slider {
-		transform: translateX(18px);
+	50% {
+		transform: rotate(3deg) scale(1.1);
 	}
 }
 
-/* ========================================
-   Buttons
-   ======================================== */
+@keyframes shake {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+	25% {
+		transform: translateX(-4px);
+	}
+	75% {
+		transform: translateX(4px);
+	}
+}
 
-/* Base button styles */
+/* ============================================================
+   SECTION DIVIDER (pinned → other notes)
+   ============================================================ */
+.no-results {
+	text-align: center;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 0.75rem;
+	font-weight: 600;
+	padding: 14px 0 8px;
+	margin: 0;
+
+	:root:not(.dark-theme) & {
+		color: #94a3b8;
+	}
+}
+
+.notes-section-divider {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 2px 0 6px;
+	color: rgba(255, 255, 255, 0.45);
+	font-size: 0.6rem;
+	font-weight: 900;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+
+	:root:not(.dark-theme) & {
+		color: #64748b;
+	}
+
+	&::before,
+	&::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			rgba(255, 255, 255, 0.2),
+			transparent
+		);
+
+		:root:not(.dark-theme) & {
+			background: linear-gradient(90deg, transparent, #cbd5e1, transparent);
+		}
+	}
+}
+
+/* ============================================================
+   PIN / COPY / DELETE ICON IMAGES
+   ============================================================ */
+.pin-icon-img {
+	width: 13px;
+	height: 13px;
+	object-fit: contain;
+	display: block;
+	transition:
+		transform 0.2s ease,
+		filter 0.2s ease;
+	filter: opacity(0.65);
+}
+
+.copy-icon-img,
+.delete-icon-img {
+	width: 13px;
+	height: 13px;
+	object-fit: contain;
+	display: block;
+	transition:
+		transform 0.2s ease,
+		filter 0.2s ease;
+	filter: opacity(0.65);
+}
+
+/* ============================================================
+   BUTTONS — BASE
+   ============================================================ */
 .btn,
 button {
-	padding: var(--spacing-sm) var(--spacing-lg);
+	padding: 6px 13px;
 	border: none;
-	border-radius: var(--border-radius-sm);
-	font-weight: 600;
-	font-size: 0.75rem;
+	border-radius: 7px;
+	font-weight: 800;
+	font-size: 0.7rem;
 	cursor: pointer;
-	transition: all 0.2s ease;
+	transition: all 0.18s cubic-bezier(0.34, 1.5, 0.64, 1);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: var(--spacing-xs);
+	gap: 4px;
 	text-align: center;
-	text-decoration: none;
 	line-height: 1;
+	white-space: nowrap;
 
 	&:disabled {
-		opacity: 0.5;
+		opacity: 0.4;
 		cursor: not-allowed;
 	}
 
 	&:not(:disabled):hover {
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-md);
+		transform: translateY(-2px);
+		box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
 	}
 
 	&:not(:disabled):active {
-		transform: translateY(0);
+		transform: translateY(1px);
+		box-shadow: none;
 	}
 }
 
-/* Primary button (Add Note, Paste) */
+/* Add Note / Clear All ─────────────────────────────────────── */
 .btn-primary,
 .header .sub-heading .pastehere button,
 .header .sub-heading .sub-sub button {
-	background: var(--accent-primary);
+	background: linear-gradient(135deg, #667eea, #764ba2);
 	color: white;
-	box-shadow: var(--shadow-sm);
+	box-shadow: 0 3px 10px rgba(102, 126, 234, 0.45);
+	font-weight: 900;
 
 	&:hover:not(:disabled) {
-		background: var(--accent-primary-hover);
+		background: linear-gradient(135deg, #5a6fd6, #6a3d9a);
+		box-shadow: 0 5px 14px rgba(102, 126, 234, 0.55);
+	}
+}
+
+/* Pin button ───────────────────────────────────────────────── */
+.pin-btn {
+	background: rgba(255, 255, 255, 0.25);
+	border: 1.5px solid rgba(0, 0, 0, 0.15);
+	padding: 0;
+	width: 24px;
+	height: 24px;
+	border-radius: 7px;
+	cursor: pointer;
+	transition: all 0.18s cubic-bezier(0.34, 1.5, 0.64, 1);
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.12);
+
+	&:hover:not(:disabled) {
+		background: rgba(247, 151, 30, 0.2);
+		border-color: #f7971e;
+		transform: rotate(20deg) scale(1.2);
+		box-shadow: 0 0 10px rgba(247, 151, 30, 0.5);
+
+		.pin-icon-img {
+			filter: opacity(1) saturate(1.5);
+		}
 	}
 
-	&.success {
-		background: var(--success);
+	&:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+
+	&.pinned {
+		background: rgba(247, 151, 30, 0.25);
+		border-color: #f7971e;
+		box-shadow: 1px 1px 0 rgba(247, 151, 30, 0.4);
+
+		.pin-icon-img {
+			filter: opacity(1) saturate(1.4);
+		}
 
 		&:hover:not(:disabled) {
-			background: var(--success-hover);
+			transform: rotate(-20deg) scale(1.2);
 		}
 	}
 }
 
-/* Copy button */
+/* Copy button ──────────────────────────────────────────────── */
 .copy-btn,
 .header .copied-text .copy-here .button-group .copy-btn {
-	background: transparent;
-	color: var(--accent-secondary);
-	border: none;
+	background: rgba(255, 255, 255, 0.25);
+	border: 1.5px solid rgba(0, 0, 0, 0.15);
 	padding: 0;
-	width: 20px;
-	height: 20px;
-	border-radius: 0;
-	font-size: 0.85rem;
+	width: 24px;
+	height: 24px;
+	border-radius: 7px;
 	cursor: pointer;
-	transition: all 0.2s ease;
-	box-shadow: none;
-	margin: 0;
-	white-space: nowrap;
+	transition: all 0.18s cubic-bezier(0.34, 1.5, 0.64, 1);
 	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.12);
+	margin: 0;
 
 	&:hover:not(:disabled) {
-		background: transparent;
-		transform: none;
-		box-shadow: none;
+		background: rgba(67, 233, 123, 0.2);
+		border-color: #43e97b;
+		transform: scale(1.2);
+		box-shadow: 0 0 10px rgba(67, 233, 123, 0.5);
 
 		.copy-icon-img {
-			opacity: 1;
+			filter: opacity(1) saturate(1.5);
 		}
 	}
 
 	&:active {
-		transform: translateY(0);
+		transform: scale(0.9);
 	}
 
 	&.copied {
-		background: transparent;
-		border: none;
+		background: rgba(67, 233, 123, 0.3);
+		border-color: #43e97b;
+		box-shadow: 0 0 8px rgba(67, 233, 123, 0.4);
 
 		.copy-icon-img {
-			opacity: 1;
+			filter: opacity(1);
 		}
 	}
 }
 
-/* Delete button */
+/* Delete button ────────────────────────────────────────────── */
 .delete-btn,
 .header .copied-text .copy-here .button-group .delete-btn {
-	background: transparent;
-	color: var(--danger);
-	border: none;
+	background: rgba(255, 255, 255, 0.25);
+	border: 1.5px solid rgba(0, 0, 0, 0.15);
 	padding: 0;
-	width: 20px;
-	height: 20px;
-	border-radius: 0;
-	font-size: 0.85rem;
+	width: 24px;
+	height: 24px;
+	border-radius: 7px;
 	cursor: pointer;
-	transition: all 0.2s ease;
-	box-shadow: none;
-	margin: 0;
-	white-space: nowrap;
+	transition: all 0.18s cubic-bezier(0.34, 1.5, 0.64, 1);
 	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.12);
+	margin: 0;
 
 	&:hover:not(:disabled) {
-		background: transparent;
-		transform: none;
-		box-shadow: none;
+		background: rgba(255, 107, 107, 0.2);
+		border-color: #ff6b6b;
+		transform: scale(1.2);
+		box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
 
 		.delete-icon-img {
-			opacity: 1;
+			filter: opacity(1) saturate(1.5);
 		}
 	}
 
 	&:active {
-		transform: translateY(0);
+		transform: scale(0.9);
 	}
 }
 
-/* Clear All button */
 .btn-danger {
-	background: var(--danger);
+	background: linear-gradient(135deg, #ff6b6b, #ee0979);
 	color: white;
-	box-shadow: var(--shadow-sm);
+	box-shadow: 0 3px 10px rgba(238, 9, 121, 0.35);
 
 	&:hover:not(:disabled) {
-		background: var(--danger-hover);
+		box-shadow: 0 5px 14px rgba(238, 9, 121, 0.5);
 	}
 }
 
-/* ========================================
-   Scrollbar Styling
-   ======================================== */
+/* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+.theme-toggle {
+	.theme-toggle-btn {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 5px;
+		background: #e2e8f0;
+		border: 2px solid #1a1a2e;
+		padding: 3px 4px 3px 8px;
+		border-radius: 999px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		box-shadow: 2px 2px 0 #1a1a2e;
+		min-width: 58px;
+
+		:root.dark-theme & {
+			background: #334155;
+			border-color: #94a3b8;
+			box-shadow: 2px 2px 0 #475569;
+		}
+
+		&:hover {
+			transform: translateY(-1px);
+			box-shadow: 3px 3px 0 #1a1a2e;
+
+			:root.dark-theme & {
+				box-shadow: 3px 3px 0 #475569;
+			}
+		}
+
+		&:active {
+			transform: translateY(1px);
+			box-shadow: 1px 1px 0 #1a1a2e;
+		}
+	}
+
+	.theme-label {
+		font-size: 0.58rem;
+		font-weight: 900;
+		color: #1a1a2e;
+		text-transform: uppercase;
+		letter-spacing: 0.8px;
+		line-height: 1;
+
+		:root.dark-theme & {
+			color: #cbd5e1;
+		}
+	}
+
+	.toggle-switch {
+		width: 20px;
+		height: 20px;
+		background: #1a1a2e;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.65rem;
+		flex-shrink: 0;
+		transition: background 0.2s ease;
+
+		:root.dark-theme & {
+			background: #ffe066;
+		}
+
+		/* hide the old slider */
+		.toggle-slider {
+			display: none;
+		}
+
+		&::after {
+			content: '🌙';
+			line-height: 1;
+
+			:root.dark-theme & {
+				content: '☀️';
+			}
+		}
+	}
+}
+
+/* ============================================================
+   SCROLLBAR — thin and subtle
+   ============================================================ */
 * {
 	scrollbar-width: thin;
-	scrollbar-color: var(--bg-card-border) var(--bg-primary);
+	scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+
+	:root:not(.dark-theme) & {
+		scrollbar-color: #cbd5e1 transparent;
+	}
 }
 
 *::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
+	width: 4px;
 }
-
 *::-webkit-scrollbar-track {
-	background: var(--bg-primary);
+	background: transparent;
 }
-
 *::-webkit-scrollbar-thumb {
-	background: var(--bg-card-border);
-	border-radius: var(--border-radius-full);
+	background: rgba(255, 255, 255, 0.18);
+	border-radius: 9999px;
+
+	:root:not(.dark-theme) & {
+		background: #cbd5e1;
+	}
 
 	&:hover {
-		background: var(--text-tertiary);
+		background: rgba(255, 255, 255, 0.35);
 	}
 }

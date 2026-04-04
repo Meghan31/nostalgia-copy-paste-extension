@@ -5,7 +5,7 @@ import { Popup } from './chrome-extension/popup/index';
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-		<div className=" w-[300px] h-[500px]">
+		<div className="w-full h-full">
 			<Popup />
 		</div>
 	</StrictMode>

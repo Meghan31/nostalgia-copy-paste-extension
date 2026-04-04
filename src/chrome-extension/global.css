@@ -109,8 +109,7 @@ body {
   min-height: 560px;
   max-height: 600px;
   margin: 0;
-  /* ROUNDED EDGES TRICK: Add padding so rounded surface is visible inside */
-  padding: 8px;
+  padding: 0;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -119,13 +118,10 @@ body {
   overflow: hidden;
 }
 
-/* ROUNDED SURFACE: #root acts as the rounded card inside padded body */
 #root {
   width: 100%;
   height: 100%;
-  min-height: calc(560px - 16px); /* min-height minus body padding */
-  border-radius: 16px;
+  min-height: 560px;
   overflow: hidden;
   background: var(--bg-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
