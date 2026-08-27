@@ -45,6 +45,20 @@ $card-colors-dark: (
 );
 
 /* ============================================================
+   POPUP ROOT SIZING — Chrome/Brave sizes the popup window off
+   <html>, not <body>. Without this, an unconstrained <html>
+   falls back to the browser's default max popup width, leaving
+   the fixed-width body stranded in the corner with a big blank
+   area beside it.
+   ============================================================ */
+html {
+	width: 340px;
+	min-height: 560px;
+	max-height: 600px;
+	overflow: hidden;
+}
+
+/* ============================================================
    POPUP CONTAINER — zero-gap, full bleed
    ============================================================ */
 .popup-container {
@@ -594,18 +608,16 @@ $card-colors-dark: (
 		z-index: 10;
 	}
 
-	/* ── PINNED overrides ────────────────────────────────────── */
+	/* ── PINNED overrides — accent ring, keep the card's own colour ── */
 	&.pinned {
-		background: linear-gradient(135deg, #fff8e1, #ffe0b2) !important;
-		border: 2px solid #f7971e !important;
-		box-shadow: 3px 3px 0 rgba(247, 151, 30, 0.4) !important;
+		box-shadow:
+			3px 3px 0 #1a1a2e,
+			0 0 0 2px #f7971e !important;
 
 		:root.dark-theme & {
-			background: linear-gradient(135deg, #2c1c00, #3d2800) !important;
-			border-color: rgba(247, 151, 30, 0.75) !important;
 			box-shadow:
-				3px 3px 0 rgba(247, 151, 30, 0.3),
-				0 2px 10px rgba(0, 0, 0, 0.4) !important;
+				3px 3px 0 rgba(255, 255, 255, 0.18),
+				0 0 0 2px rgba(247, 151, 30, 0.8) !important;
 		}
 
 		&::before {
@@ -613,7 +625,9 @@ $card-colors-dark: (
 		}
 
 		&:hover {
-			box-shadow: 5px 5px 0 rgba(247, 151, 30, 0.55) !important;
+			box-shadow:
+				5px 5px 0 #1a1a2e,
+				0 0 0 2px #ffb84d !important;
 		}
 	}
 

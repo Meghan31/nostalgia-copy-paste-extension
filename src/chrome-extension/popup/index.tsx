@@ -628,6 +628,9 @@ export const Popup = () => {
 						{/* Pinned Notes Section */}
 						{pinnedNotes.length > 0 && (
 							<>
+								<div className="notes-section-divider pinned-divider">
+									<span>📌 Pinned</span>
+								</div>
 								{pinnedNotes.map((note) => (
 									<div
 										key={note.id}
