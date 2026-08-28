@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Copy, Trash2, Check, Search, X, Download } from 'lucide-react';
 import '../global.css';
 import './options.scss';
 
@@ -12,17 +13,6 @@ interface Note {
 interface CopiedState {
 	[key: string]: boolean;
 }
-
-const CARD_COLORS = [
-	'#FFE066',
-	'#FF9F9F',
-	'#A8E6CF',
-	'#FFD3B6',
-	'#C9B8FF',
-	'#B8E4FF',
-	'#FFB8D9',
-	'#D4F1A0',
-];
 
 const TITLE_LETTERS = ['N', 'O', 'S', 'T', 'A', 'L', 'G', 'I', 'A'];
 
@@ -95,11 +85,6 @@ const Options = () => {
 
 	return (
 		<div className="options-page">
-			{/* Decorative background blobs */}
-			<div className="blob blob-1" />
-			<div className="blob blob-2" />
-			<div className="blob blob-3" />
-
 			{/* Header */}
 			<header className="options-header">
 				<div className="header-deco header-deco-1">⭐</div>
@@ -123,7 +108,7 @@ const Options = () => {
 							</span>
 						))}
 					</h1>
-					<p className="options-subtitle">✏️ Your cartoon clipboard, reimagined!</p>
+					<p className="options-subtitle">✏️ Your sketchbook clipboard, reimagined!</p>
 				</div>
 
 				<button
@@ -168,10 +153,10 @@ const Options = () => {
 							disabled={notes.length === 0}
 							title="Download all notes as JSON"
 						>
-							⬇️ Export JSON
+							<Download size={14} strokeWidth={2.5} /> Export JSON
 						</button>
 						<div className="search-wrap">
-							<span className="search-icon">🔍</span>
+							<span className="search-icon"><Search size={14} strokeWidth={2.5} /></span>
 							<input
 								type="text"
 								className="options-search"
@@ -181,7 +166,7 @@ const Options = () => {
 							/>
 							{searchQuery && (
 								<button className="search-clear" onClick={() => setSearchQuery('')}>
-									✕
+									<X size={11} strokeWidth={3} />
 								</button>
 							)}
 						</div>
@@ -193,15 +178,13 @@ const Options = () => {
 						{filteredNotes.map((note, index) => (
 							<div
 								key={note.id || index}
-								className={`note-card note-color-${index % 8}`}
-								style={
-									{
-										'--card-color': CARD_COLORS[index % CARD_COLORS.length],
-									} as React.CSSProperties
-								}
+								className={`note-card ${note.pinned ? 'pinned' : ''}`}
 							>
-								<div className="note-card-top" />
-								<div className="note-card-tape" />
+								{note.pinned ? (
+									<div className="note-card-tack" />
+								) : (
+									<div className="note-card-tape" />
+								)}
 								<div className="note-body">
 									<h3 className="note-heading">{note.heading}</h3>
 									<textarea
@@ -215,13 +198,21 @@ const Options = () => {
 											className={`cartoon-btn copy-btn ${copiedStates[index] ? 'copied' : ''}`}
 											onClick={() => copyToClipboard(note.text, index)}
 										>
-											{copiedStates[index] ? '✅ Copied!' : '📋 Copy'}
+											{copiedStates[index] ? (
+												<>
+													<Check size={14} strokeWidth={2.5} /> Copied!
+												</>
+											) : (
+												<>
+													<Copy size={14} strokeWidth={2.5} /> Copy
+												</>
+											)}
 										</button>
 										<button
 											className="cartoon-btn delete-btn"
 											onClick={() => deleteNote(index)}
 										>
-											🗑️ Delete
+											<Trash2 size={14} strokeWidth={2.5} /> Delete
 										</button>
 									</div>
 								</div>

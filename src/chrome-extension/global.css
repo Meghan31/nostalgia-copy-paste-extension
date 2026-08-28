@@ -3,89 +3,111 @@
 @tailwind utilities;
 
 /* ========================================
-   CSS Variables - Light Theme (Default)
+   Design Tokens - Hand-Drawn Sketchbook
    ======================================== */
 :root {
-  /* Background Colors */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #e2e8f0;
-  --bg-card: #ffffff;
-  --bg-card-border: #cbd5e1;
-  --bg-input: #f1f5f9;
+  /* Palette - "Warm Paper" (light) */
+  --paper: #fdfbf7;
+  --pencil: #2d2d2d;
+  --muted: #e5e0d8;
+  --accent: #ff4d4d;
+  --border-ink: #2d2d2d;
+  --blue: #2d5da1;
+  --postit: #fff9c4;
+  --card-bg: #ffffff;
 
-  /* Text Colors */
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-tertiary: #64748b;
+  /* aliases so anything still reading the old token names keeps working */
+  --bg-primary: var(--paper);
+  --bg-secondary: var(--muted);
+  --bg-card: var(--card-bg);
+  --bg-card-border: var(--border-ink);
+  --bg-input: #ffffff;
+  --text-primary: var(--pencil);
+  --text-secondary: #514f4b;
+  --text-tertiary: #6f6b65;
+  --text-placeholder: #77726b;
+  --text-on-accent: #ffffff;
+  --text-on-blue: #ffffff;
+  --field-border: rgb(45 45 45 / 35%);
+  --field-surface: rgb(0 0 0 / 6%);
+  --field-surface-focus: rgb(0 0 0 / 10%);
+  --divider-border: rgb(45 45 45 / 30%);
+  --focus-ring: rgb(45 93 161 / 20%);
+  --accent-primary: var(--blue);
+  --accent-primary-hover: #234a80;
+  --accent-secondary: var(--accent);
+  --accent-secondary-hover: #e63e3e;
+  --success: #2f8f5b;
+  --success-hover: #237447;
+  --danger: var(--accent);
+  --danger-hover: #e63e3e;
+  --warning: #c99b1f;
+  --warning-hover: #a87f16;
 
-  /* Accent Colors */
-  --accent-primary: #3b82f6;
-  --accent-primary-hover: #2563eb;
-  --accent-secondary: #8b5cf6;
-  --accent-secondary-hover: #7c3aed;
+  /* Fonts */
+  --font-heading: "Kalam", cursive;
+  --font-body: "Patrick Hand", cursive;
 
-  /* Status Colors */
-  --success: #10b981;
-  --success-hover: #059669;
-  --danger: #ef4444;
-  --danger-hover: #dc2626;
-  --warning: #f59e0b;
-  --warning-hover: #d97706;
+  /* Wobbly radii - irregular ellipse borders, never plain rounded corners.
+     Scaled to this UI: the popup is 340px wide with ~300px cards, so the
+     large 200px+ corner values from a typical hand-drawn landing page
+     would blow out into extreme blobs here instead of a subtle wobble. */
+  --radius-wobbly-card: 18px 22px 20px 24px / 22px 18px 26px 20px;
+  --radius-wobbly-panel: 16px 20px 18px 22px / 20px 16px 22px 18px;
+  --radius-wobbly-sm: 60px 12px 55px 14px / 14px 55px 12px 60px;
+  --radius-wobbly-pill: 999px 40px 999px 40px / 40px 999px 40px 999px;
+  --radius-wobbly-circle: 48% 52% 51% 49% / 53% 47% 53% 47%;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-
-  /* Border Radius */
-  --border-radius-sm: 6px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --border-radius-full: 9999px;
-
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 24px;
-  --spacing-2xl: 32px;
+  /* Hard offset shadows - no blur, ever */
+  --shadow-sm: 2px 2px 0px 0px var(--border-ink);
+  --shadow-md: 4px 4px 0px 0px var(--border-ink);
+  --shadow-lg: 8px 8px 0px 0px var(--border-ink);
 }
 
-/* ========================================
-   CSS Variables - Dark Theme
-   ======================================== */
+/* Dark mode - "Night Sketchbook": the same hand-drawn language, chalk on
+   a dark board instead of pencil on paper. Hard shadows flip to a chalky
+   off-white offset (light catching a raised edge) instead of black,
+   since a black shadow would vanish against a dark page. */
 :root.dark-theme {
-  /* Background Colors */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-card: #1e293b;
-  --bg-card-border: #334155;
-  --bg-input: #334155;
+  --paper: #211f1c;
+  --pencil: #f2ede2;
+  --muted: #35312b;
+  --accent: #ff6b6b;
+  --border-ink: #f2ede2;
+  --blue: #6ea8e0;
+  --postit: #4a3f1f;
+  --card-bg: #2a2723;
 
-  /* Text Colors */
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #94a3b8;
+  --bg-primary: var(--paper);
+  --bg-secondary: var(--muted);
+  --bg-card: var(--card-bg);
+  --bg-card-border: var(--border-ink);
+  --bg-input: #2a2723;
+  --text-primary: var(--pencil);
+  --text-secondary: #d6cfc1;
+  --text-tertiary: #b7afa1;
+  --text-placeholder: #aaa294;
+  --text-on-accent: #211f1c;
+  --text-on-blue: #211f1c;
+  --field-border: rgb(242 237 226 / 35%);
+  --field-surface: rgb(255 255 255 / 8%);
+  --field-surface-focus: rgb(255 255 255 / 14%);
+  --divider-border: rgb(242 237 226 / 30%);
+  --focus-ring: rgb(110 168 224 / 30%);
+  --accent-primary: var(--blue);
+  --accent-primary-hover: #8fc0ee;
+  --accent-secondary: var(--accent);
+  --accent-secondary-hover: #ff8a8a;
+  --success: #5cc98c;
+  --success-hover: #7ddba6;
+  --danger: var(--accent);
+  --danger-hover: #ff8a8a;
+  --warning: var(--postit);
+  --warning-hover: #6b5b2c;
 
-  /* Accent Colors */
-  --accent-primary: #60a5fa;
-  --accent-primary-hover: #3b82f6;
-  --accent-secondary: #a78bfa;
-  --accent-secondary-hover: #8b5cf6;
-
-  /* Status Colors */
-  --success: #34d399;
-  --success-hover: #10b981;
-  --danger: #f87171;
-  --danger-hover: #ef4444;
-  --warning: #fbbf24;
-  --warning-hover: #f59e0b;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  --shadow-sm: 2px 2px 0px 0px var(--border-ink);
+  --shadow-md: 4px 4px 0px 0px var(--border-ink);
+  --shadow-lg: 8px 8px 0px 0px var(--border-ink);
 }
 
 /* ========================================
@@ -104,18 +126,28 @@ html {
 }
 
 body {
-  /* POPUP SIZE: Set stable dimensions for Chrome extension popup */
+  /* POPUP SIZE: Set stable dimensions for Chrome extension popup.
+     Overridden (auto/full-width) by the Options page stylesheet. */
   width: 340px;
   min-height: 560px;
   max-height: 600px;
   margin: 0;
   padding: 0;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--paper);
+  /* paper grain - a faint dot grid to simulate notebook texture */
+  background-image: radial-gradient(var(--muted) 1.4px, transparent 1.4px);
+  background-size: 22px 22px;
+  color: var(--pencil);
   transition: background-color 0.3s ease, color 0.3s ease;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 1.05rem;
   box-sizing: border-box;
   overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), cursive;
+  font-weight: 700;
 }
 
 #root {
@@ -123,5 +155,5 @@ body {
   height: 100%;
   min-height: 560px;
   overflow: hidden;
-  background: var(--bg-primary);
+  background: transparent;
 }
