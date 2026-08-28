@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Pin, Copy, Trash2, Check, Sun, Moon, X } from 'lucide-react';
 import './popup.scss';
 
 interface Note {
@@ -482,13 +483,6 @@ export const Popup = () => {
 	// Split notes into pinned and unpinned
 	const pinnedNotes = filteredNotes.filter((note) => note.pinned);
 	const unpinnedNotes = filteredNotes.filter((note) => !note.pinned);
-	const copyIconSrc =
-		theme === 'dark' ? 'public/white-copy.png' : 'public/black-copy.png';
-	const pinnedIconSrc =
-		theme === 'dark'
-			? 'public/white-pin-icon.png'
-			: 'public/black-pin-icon.png';
-
 	return (
 		<div className="popup-container">
 			<div className="header">
@@ -505,7 +499,11 @@ export const Popup = () => {
 						>
 							<span className="theme-label">{theme}</span>
 							<div className="toggle-switch">
-								<div className="toggle-slider"></div>
+								{theme === 'dark' ? (
+									<Sun size={12} strokeWidth={3} className="icon-svg" />
+								) : (
+									<Moon size={12} strokeWidth={3} className="icon-svg" />
+								)}
 							</div>
 						</button>
 					</div>
@@ -591,7 +589,7 @@ export const Popup = () => {
 									className="search-clear-btn"
 									onClick={() => setSearchQuery('')}
 								>
-									✕
+									<X size={11} strokeWidth={3} className="icon-svg" />
 								</button>
 							)}
 						</div>
@@ -663,11 +661,7 @@ export const Popup = () => {
 													disabled={isDragEnabled}
 													title="Unpin this note"
 												>
-													<img
-														src={pinnedIconSrc}
-														className="pin-icon-img"
-														alt="pin"
-													/>
+													<Pin size={13} strokeWidth={2.5} className="icon-svg" />
 												</button>
 												<button
 													onClick={() => copyToClipboard(note.text, note.id)}
@@ -676,22 +670,18 @@ export const Popup = () => {
 													}`}
 													title="Copy note"
 												>
-													<img
-														src={copyIconSrc}
-														className="copy-icon-img"
-														alt={copiedStates[note.id] ? 'copied' : 'copy'}
-													/>
+													{copiedStates[note.id] ? (
+														<Check size={13} strokeWidth={2.5} className="icon-svg" />
+													) : (
+														<Copy size={13} strokeWidth={2.5} className="icon-svg" />
+													)}
 												</button>
 												<button
 													onClick={() => deleteNote(note.id)}
 													className="delete-btn"
 													title="Delete note"
 												>
-													<img
-														src="public/delete.png"
-														className="delete-icon-img"
-														alt="delete"
-													/>
+													<Trash2 size={13} strokeWidth={2.5} className="icon-svg" />
 												</button>
 											</div>
 										</div>
@@ -752,11 +742,7 @@ export const Popup = () => {
 											disabled={isDragEnabled}
 											title="Pin this note to the top"
 										>
-											<img
-												src="public/black-pin-icon.png"
-												className="pin-icon-img"
-												alt="pin"
-											/>
+											<Pin size={13} strokeWidth={2.5} className="icon-svg" />
 										</button>
 										<button
 											onClick={() => copyToClipboard(note.text, note.id)}
@@ -765,22 +751,18 @@ export const Popup = () => {
 											}`}
 											title="Copy note"
 										>
-											<img
-												src={copyIconSrc}
-												className="copy-icon-img"
-												alt={copiedStates[note.id] ? 'copied' : 'copy'}
-											/>
+											{copiedStates[note.id] ? (
+												<Check size={13} strokeWidth={2.5} className="icon-svg" />
+											) : (
+												<Copy size={13} strokeWidth={2.5} className="icon-svg" />
+											)}
 										</button>
 										<button
 											onClick={() => deleteNote(note.id)}
 											className="delete-btn"
 											title="Delete note"
 										>
-											<img
-												src="public/delete.png"
-												className="delete-icon-img"
-												alt="delete"
-											/>
+											<Trash2 size={13} strokeWidth={2.5} className="icon-svg" />
 										</button>
 									</div>
 								</div>

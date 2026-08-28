@@ -13,6 +13,7 @@
     "@types/node": "^22.5.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "lucide-react": "latest",
     "sass": "^1.83.4",
     "vite-plugin-static-copy": "^1.0.6"
   },
