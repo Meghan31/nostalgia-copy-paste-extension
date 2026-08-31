@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pin, Copy, Trash2, Check, Sun, Moon, X } from 'lucide-react';
+import { Pin, Copy, Trash2, Check, Sun, Moon, X, Pencil } from 'lucide-react';
 import './popup.scss';
 
 interface Note {
@@ -13,6 +13,171 @@ interface Note {
 interface CopiedState {
 	[key: string]: boolean;
 }
+
+const BIG_NOTE_TEXT_THRESHOLD = 220;
+
+interface NoteCardProps {
+	note: Note;
+	isPinned: boolean;
+	isDraggable: boolean;
+	isDragging: boolean;
+	isCopied: boolean;
+	isDragOver: boolean;
+	dropPosition: 'before' | 'after' | null;
+	isEditing: boolean;
+	editHeading: string;
+	editText: string;
+	onEditHeadingChange: (value: string) => void;
+	onEditTextChange: (value: string) => void;
+	onDragStart: (e: React.DragEvent<HTMLDivElement>, id: string) => void;
+	onDragEnd: () => void;
+	onDragOver: (e: React.DragEvent<HTMLDivElement>, id: string) => void;
+	onDrop: (e: React.DragEvent<HTMLDivElement>, id: string) => void;
+	onTogglePin: (id: string) => void;
+	onCopy: (text: string, id: string) => void;
+	onDelete: (id: string) => void;
+	onStartEdit: (note: Note) => void;
+	onSaveEdit: (id: string) => void;
+	onCancelEdit: () => void;
+}
+
+const NoteCard = ({
+	note,
+	isPinned,
+	isDraggable,
+	isDragging,
+	isCopied,
+	isDragOver,
+	dropPosition,
+	isEditing,
+	editHeading,
+	editText,
+	onEditHeadingChange,
+	onEditTextChange,
+	onDragStart,
+	onDragEnd,
+	onDragOver,
+	onDrop,
+	onTogglePin,
+	onCopy,
+	onDelete,
+	onStartEdit,
+	onSaveEdit,
+	onCancelEdit,
+}: NoteCardProps) => {
+	return (
+		<div
+			key={note.id}
+			data-note-id={note.id}
+			className={`copied-text ${isPinned ? 'pinned' : ''} ${
+				isDragging ? 'dragging' : ''
+			} ${isCopied ? 'copy-blink' : ''} ${isDragOver ? 'drag-over' : ''} ${
+				isDragOver && dropPosition === 'before' ? 'drop-indicator-before' : ''
+			} ${isDragOver && dropPosition === 'after' ? 'drop-indicator-after' : ''}`}
+			draggable={isDraggable && !isEditing}
+			onDragStart={(e) => onDragStart(e, note.id)}
+			onDragEnd={onDragEnd}
+			onDragOver={(e) => onDragOver(e, note.id)}
+			onDrop={(e) => onDrop(e, note.id)}
+		>
+			<div className="copy-here">
+				{isEditing ? (
+					<input
+						type="text"
+						className="edit-heading-input"
+						placeholder="Give a heading"
+						value={editHeading}
+						onChange={(e) => onEditHeadingChange(e.target.value)}
+						autoFocus
+					/>
+				) : (
+					<p>{note.heading}</p>
+				)}
+				<div className="button-group">
+					{isEditing ? (
+						<>
+							<button
+								onClick={() => onSaveEdit(note.id)}
+								className="save-btn"
+								title="Save changes"
+							>
+								<Check size={13} strokeWidth={2.5} className="icon-svg" />
+							</button>
+							<button
+								onClick={onCancelEdit}
+								className="cancel-btn"
+								title="Cancel editing"
+							>
+								<X size={13} strokeWidth={2.5} className="icon-svg" />
+							</button>
+						</>
+					) : (
+						<>
+							<button
+								onClick={() => onTogglePin(note.id)}
+								className={`pin-btn ${isPinned ? 'pinned' : ''}`}
+								disabled={isDraggable}
+								title={isPinned ? 'Unpin this note' : 'Pin this note to the top'}
+							>
+								<Pin size={13} strokeWidth={2.5} className="icon-svg" />
+							</button>
+							<button
+								onClick={() => onStartEdit(note)}
+								className="edit-btn"
+								disabled={isDraggable}
+								title="Edit this note"
+							>
+								<Pencil size={13} strokeWidth={2.5} className="icon-svg" />
+							</button>
+							<button
+								onClick={() => onCopy(note.text, note.id)}
+								className={`copy-btn ${isCopied ? 'copied' : ''}`}
+								title="Copy note"
+							>
+								{isCopied ? (
+									<Check size={13} strokeWidth={2.5} className="icon-svg" />
+								) : (
+									<Copy size={13} strokeWidth={2.5} className="icon-svg" />
+								)}
+							</button>
+							<button
+								onClick={() => onDelete(note.id)}
+								className="delete-btn"
+								title="Delete note"
+							>
+								<Trash2 size={13} strokeWidth={2.5} className="icon-svg" />
+							</button>
+						</>
+					)}
+				</div>
+			</div>
+			<div className="paste-input">
+				{isEditing ? (
+					<textarea
+						rows={3}
+						value={editText}
+						onChange={(e) => onEditTextChange(e.target.value)}
+						className="edit-text-area"
+						style={{ resize: 'vertical' }}
+					/>
+				) : (
+					<textarea
+						rows={2}
+						value={note.text}
+						readOnly
+						className={note.text.length > BIG_NOTE_TEXT_THRESHOLD ? 'big-text' : ''}
+						style={{ resize: 'vertical' }}
+					/>
+				)}
+			</div>
+			{!isEditing && (
+				<div className="note-footer">
+					<span className="note-char-count">{note.text.length} chars</span>
+				</div>
+			)}
+		</div>
+	);
+};
 
 export const Popup = () => {
 	const [copiedTexts, setCopiedTexts] = useState<Note[]>([]);
@@ -29,11 +194,15 @@ export const Popup = () => {
 
 	// Drag and drop state
 	const [draggedItem, setDraggedItem] = useState<string | null>(null);
-	const [isDragEnabled, setIsDragEnabled] = useState(false);
 	const [dragOverItem, setDragOverItem] = useState<string | null>(null);
 	const [dropPosition, setDropPosition] = useState<'before' | 'after' | null>(
 		null,
 	);
+
+	// Editing state
+	const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+	const [editHeading, setEditHeading] = useState('');
+	const [editText, setEditText] = useState('');
 
 	// Theme state
 	const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -48,10 +217,6 @@ export const Popup = () => {
 	const addNoteTimeoutRef = useRef<number | null>(null);
 	const errorTimeoutRef = useRef<number | null>(null);
 	const copyTimeoutsRef = useRef<{ [key: string]: number }>({});
-
-	// Constants
-	const MAX_TEXT_LENGTH = 5000; // Set a reasonable limit
-	const BIG_NOTE_TEXT_THRESHOLD = 220;
 
 	// Clean up timeouts on unmount
 	useEffect(() => {
@@ -185,20 +350,6 @@ export const Popup = () => {
 
 		setIsAddingNote(true);
 
-		// Validate text length
-		if (newText.trim().length > MAX_TEXT_LENGTH) {
-			setError(`Text is too long (max ${MAX_TEXT_LENGTH} characters)`);
-			setRedColor('red');
-
-			// Reset after timeout
-			errorTimeoutRef.current = window.setTimeout(() => {
-				setError(null);
-				setRedColor('black');
-				setIsAddingNote(false);
-			}, 1500);
-			return;
-		}
-
 		if (newText.trim()) {
 			const newNote: Note = {
 				heading: newHeading.trim() || 'No Heading',
@@ -294,14 +445,37 @@ export const Popup = () => {
 			});
 	};
 
-	// Toggle drag functionality
-	const toggleDragMode = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setIsDragEnabled(e.target.checked);
+	// Start editing a note
+	const startEdit = (note: Note) => {
+		setEditingNoteId(note.id);
+		setEditHeading(note.heading);
+		setEditText(note.text);
+	};
 
-		// If turning off drag mode, clear any active drag
-		if (!e.target.checked) {
-			setDraggedItem(null);
+	// Cancel editing
+	const cancelEdit = () => {
+		setEditingNoteId(null);
+		setEditHeading('');
+		setEditText('');
+	};
+
+	// Save edited note
+	const saveEdit = (id: string) => {
+		if (!editText.trim()) {
+			return;
 		}
+
+		const updatedNotes = copiedTexts.map((note) =>
+			note.id === id
+				? {
+						...note,
+						heading: editHeading.trim() || 'No Heading',
+						text: editText.trim(),
+					}
+				: note,
+		);
+		saveNotes(updatedNotes);
+		cancelEdit();
 	};
 
 	// Toggle theme
@@ -399,9 +573,21 @@ export const Popup = () => {
 		setDropPosition(null);
 	};
 
-	// Handle drag start - only works when drag is enabled
+	// Toggle the Drag & Drop panel - draggability follows this directly
+	const toggleDragSection = () => {
+		setIsDragSectionOpen((prev) => {
+			const next = !prev;
+			if (!next) {
+				// Closing the panel must fully turn off dragging
+				resetDragState();
+			}
+			return next;
+		});
+	};
+
+	// Handle drag start - only works while the Drag & Drop panel is open
 	const handleDragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
-		if (!isDragEnabled) {
+		if (!isDragSectionOpen) {
 			e.preventDefault();
 			return;
 		}
@@ -412,7 +598,7 @@ export const Popup = () => {
 
 	// Handle drag end
 	const handleDragEnd = () => {
-		if (!isDragEnabled) {
+		if (!isDragSectionOpen) {
 			return;
 		}
 
@@ -424,7 +610,7 @@ export const Popup = () => {
 		e: React.DragEvent<HTMLDivElement>,
 		targetId: string,
 	) => {
-		if (!isDragEnabled || !draggedItem) return;
+		if (!isDragSectionOpen || !draggedItem) return;
 
 		e.preventDefault();
 		e.dataTransfer.dropEffect = 'move';
@@ -440,7 +626,7 @@ export const Popup = () => {
 
 	// Handle drop
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetId: string) => {
-		if (!isDragEnabled) {
+		if (!isDragSectionOpen) {
 			return;
 		}
 
@@ -529,7 +715,7 @@ export const Popup = () => {
 						{isSearchSectionOpen ? 'Close Search' : '+ Search'}
 					</button>
 					<button
-						onClick={() => setIsDragSectionOpen((prev) => !prev)}
+						onClick={toggleDragSection}
 						className="drag-toggle-btn"
 						aria-expanded={isDragSectionOpen}
 						aria-controls="drag-panel"
@@ -561,11 +747,10 @@ export const Popup = () => {
 								value={newText}
 								onChange={(e) => setNewText(e.target.value)}
 								className={redColor === 'red' ? 'error' : ''}
-								maxLength={MAX_TEXT_LENGTH}
 							/>
 							{newText && (
 								<div className="character-count">
-									{newText.length}/{MAX_TEXT_LENGTH}
+									{newText.length} characters
 								</div>
 							)}
 						</div>
@@ -598,21 +783,12 @@ export const Popup = () => {
 
 				{isDragSectionOpen && (
 					<div className="drag-panel" id="drag-panel">
-						<div className="drag-mode-toggle">
-							<input
-								type="checkbox"
-								id="drag-mode"
-								checked={isDragEnabled}
-								onChange={toggleDragMode}
-								disabled={copiedTexts.length === 0}
-							/>
-							<label htmlFor="drag-mode">
+						<div className="drag-info">
+							<span>
 								{copiedTexts.length === 0
 									? 'No notes to reorder yet'
-									: isDragEnabled
-										? 'Drag mode enabled - Reorder by dragging'
-										: 'Enable drag mode to reorder notes'}
-							</label>
+									: 'Drag mode is on — drag any note to reorder it'}
+							</span>
 						</div>
 					</div>
 				)}
@@ -630,75 +806,31 @@ export const Popup = () => {
 									<span>📌 Pinned</span>
 								</div>
 								{pinnedNotes.map((note) => (
-									<div
+									<NoteCard
 										key={note.id}
-										data-note-id={note.id}
-										className={`copied-text pinned ${
-											draggedItem === note.id ? 'dragging' : ''
-										} ${
-											copiedStates[note.id] ? 'copy-blink' : ''
-										} ${dragOverItem === note.id ? 'drag-over' : ''} ${
-											dragOverItem === note.id && dropPosition === 'before'
-												? 'drop-indicator-before'
-												: ''
-										} ${
-											dragOverItem === note.id && dropPosition === 'after'
-												? 'drop-indicator-after'
-												: ''
-										}`}
-										draggable={isDragEnabled}
-										onDragStart={(e) => handleDragStart(e, note.id)}
+										note={note}
+										isPinned
+										isDraggable={isDragSectionOpen}
+										isDragging={draggedItem === note.id}
+										isCopied={!!copiedStates[note.id]}
+										isDragOver={dragOverItem === note.id}
+										dropPosition={dragOverItem === note.id ? dropPosition : null}
+										isEditing={editingNoteId === note.id}
+										editHeading={editHeading}
+										editText={editText}
+										onEditHeadingChange={setEditHeading}
+										onEditTextChange={setEditText}
+										onDragStart={handleDragStart}
 										onDragEnd={handleDragEnd}
-										onDragOver={(e) => handleDragOver(e, note.id)}
-										onDrop={(e) => handleDrop(e, note.id)}
-									>
-										<div className="copy-here">
-											<p>{note.heading}</p>
-											<div className="button-group">
-												<button
-													onClick={() => togglePin(note.id)}
-													className="pin-btn pinned"
-													disabled={isDragEnabled}
-													title="Unpin this note"
-												>
-													<Pin size={13} strokeWidth={2.5} className="icon-svg" />
-												</button>
-												<button
-													onClick={() => copyToClipboard(note.text, note.id)}
-													className={`copy-btn ${
-														copiedStates[note.id] ? 'copied' : ''
-													}`}
-													title="Copy note"
-												>
-													{copiedStates[note.id] ? (
-														<Check size={13} strokeWidth={2.5} className="icon-svg" />
-													) : (
-														<Copy size={13} strokeWidth={2.5} className="icon-svg" />
-													)}
-												</button>
-												<button
-													onClick={() => deleteNote(note.id)}
-													className="delete-btn"
-													title="Delete note"
-												>
-													<Trash2 size={13} strokeWidth={2.5} className="icon-svg" />
-												</button>
-											</div>
-										</div>
-										<div className="paste-input">
-											<textarea
-												rows={2}
-												value={note.text}
-												readOnly
-												className={
-													note.text.length > BIG_NOTE_TEXT_THRESHOLD
-														? 'big-text'
-														: ''
-												}
-												style={{ resize: 'vertical' }}
-											/>
-										</div>
-									</div>
+										onDragOver={handleDragOver}
+										onDrop={handleDrop}
+										onTogglePin={togglePin}
+										onCopy={copyToClipboard}
+										onDelete={deleteNote}
+										onStartEdit={startEdit}
+										onSaveEdit={saveEdit}
+										onCancelEdit={cancelEdit}
+									/>
 								))}
 
 								{unpinnedNotes.length > 0 && (
@@ -711,75 +843,31 @@ export const Popup = () => {
 
 						{/* Unpinned Notes Section */}
 						{unpinnedNotes.map((note) => (
-							<div
+							<NoteCard
 								key={note.id}
-								data-note-id={note.id}
-								className={`copied-text ${
-									draggedItem === note.id ? 'dragging' : ''
-								} ${
-									copiedStates[note.id] ? 'copy-blink' : ''
-								} ${dragOverItem === note.id ? 'drag-over' : ''} ${
-									dragOverItem === note.id && dropPosition === 'before'
-										? 'drop-indicator-before'
-										: ''
-								} ${
-									dragOverItem === note.id && dropPosition === 'after'
-										? 'drop-indicator-after'
-										: ''
-								}`}
-								draggable={isDragEnabled}
-								onDragStart={(e) => handleDragStart(e, note.id)}
+								note={note}
+								isPinned={false}
+								isDraggable={isDragSectionOpen}
+								isDragging={draggedItem === note.id}
+								isCopied={!!copiedStates[note.id]}
+								isDragOver={dragOverItem === note.id}
+								dropPosition={dragOverItem === note.id ? dropPosition : null}
+								isEditing={editingNoteId === note.id}
+								editHeading={editHeading}
+								editText={editText}
+								onEditHeadingChange={setEditHeading}
+								onEditTextChange={setEditText}
+								onDragStart={handleDragStart}
 								onDragEnd={handleDragEnd}
-								onDragOver={(e) => handleDragOver(e, note.id)}
-								onDrop={(e) => handleDrop(e, note.id)}
-							>
-								<div className="copy-here">
-									<p>{note.heading}</p>
-									<div className="button-group">
-										<button
-											onClick={() => togglePin(note.id)}
-											className="pin-btn"
-											disabled={isDragEnabled}
-											title="Pin this note to the top"
-										>
-											<Pin size={13} strokeWidth={2.5} className="icon-svg" />
-										</button>
-										<button
-											onClick={() => copyToClipboard(note.text, note.id)}
-											className={`copy-btn ${
-												copiedStates[note.id] ? 'copied' : ''
-											}`}
-											title="Copy note"
-										>
-											{copiedStates[note.id] ? (
-												<Check size={13} strokeWidth={2.5} className="icon-svg" />
-											) : (
-												<Copy size={13} strokeWidth={2.5} className="icon-svg" />
-											)}
-										</button>
-										<button
-											onClick={() => deleteNote(note.id)}
-											className="delete-btn"
-											title="Delete note"
-										>
-											<Trash2 size={13} strokeWidth={2.5} className="icon-svg" />
-										</button>
-									</div>
-								</div>
-								<div className="paste-input">
-									<textarea
-										rows={2}
-										value={note.text}
-										readOnly
-										className={
-											note.text.length > BIG_NOTE_TEXT_THRESHOLD
-												? 'big-text'
-												: ''
-										}
-										style={{ resize: 'vertical' }}
-									/>
-								</div>
-							</div>
+								onDragOver={handleDragOver}
+								onDrop={handleDrop}
+								onTogglePin={togglePin}
+								onCopy={copyToClipboard}
+								onDelete={deleteNote}
+								onStartEdit={startEdit}
+								onSaveEdit={saveEdit}
+								onCancelEdit={cancelEdit}
+							/>
 						))}
 					</div>
 				) : (

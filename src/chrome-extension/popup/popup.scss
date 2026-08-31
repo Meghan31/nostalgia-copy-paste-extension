@@ -331,8 +331,8 @@ html {
 	}
 }
 
-/* ── Drag mode panel ─────────────────────────────────────────── */
-.drag-mode-toggle {
+/* ── Drag mode panel (informational - dragging follows panel open state) */
+.drag-info {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -342,20 +342,10 @@ html {
 	border-radius: var(--radius-wobbly-panel);
 	margin-bottom: 4px;
 
-	input[type='checkbox'] {
-		width: 16px;
-		height: 16px;
-		cursor: pointer;
-		accent-color: var(--accent);
-		flex-shrink: 0;
-	}
-
-	label {
+	span {
 		font-family: var(--font-body), cursive;
 		font-size: 0.85rem;
 		color: var(--pencil);
-		cursor: pointer;
-		user-select: none;
 	}
 }
 
@@ -568,6 +558,7 @@ html {
 }
 
 .pin-btn,
+.edit-btn,
 .copy-btn,
 .delete-btn {
 	background: var(--bg-input);
@@ -704,4 +695,98 @@ html {
 *::-webkit-scrollbar-thumb {
 	background: var(--muted);
 	border-radius: 999px;
+}
+
+/* ============================================================
+   NOTE FOOTER - small character count under each note
+   ============================================================ */
+.note-footer {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 4px;
+}
+
+.note-char-count {
+	font-family: var(--font-body), cursive;
+	font-size: 0.68rem;
+	color: var(--text-tertiary);
+	background: var(--bg-input);
+	border: 1.5px solid var(--border-ink);
+	border-radius: var(--radius-wobbly-pill);
+	padding: 1px 7px;
+	line-height: 1.5;
+}
+
+/* ============================================================
+   EDIT MODE - inline heading input, textarea, save/cancel icons
+   ============================================================ */
+.edit-heading-input {
+	flex: 1 1 auto;
+	min-width: 0;
+	font-family: var(--font-heading), cursive;
+	font-weight: 700;
+	font-size: 1rem;
+	color: var(--pencil);
+	background: var(--bg-input);
+	border: 1.5px dashed var(--field-border);
+	border-radius: var(--radius-wobbly-sm);
+	padding: 3px 7px;
+	box-sizing: border-box;
+
+	&:focus {
+		outline: none;
+		border-color: var(--blue);
+		border-style: solid;
+	}
+}
+
+.paste-input textarea.edit-text-area {
+	border-style: solid;
+	border-color: var(--blue);
+	background: var(--field-surface-focus);
+}
+
+.save-btn,
+.cancel-btn {
+	background: var(--bg-input);
+	border: 2px solid var(--border-ink);
+	border-radius: var(--radius-wobbly-circle);
+	padding: 0;
+	width: 25px;
+	height: 25px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	flex-shrink: 0;
+	box-shadow: 2px 2px 0px 0px var(--border-ink);
+	transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+
+	&:hover {
+		transform: translate(-1px, -1px) rotate(-4deg);
+		box-shadow: 3px 3px 0px 0px var(--border-ink);
+	}
+
+	&:active {
+		transform: translate(1px, 1px);
+		box-shadow: none;
+	}
+}
+
+.save-btn {
+	background: var(--blue);
+
+	.icon-svg { color: var(--text-on-blue); }
+}
+
+.cancel-btn {
+	&:hover {
+		background: var(--accent);
+
+		.icon-svg { color: var(--text-on-accent); }
+	}
+}
+
+.edit-btn {
+	&:hover:not(:disabled) .icon-svg { color: var(--blue); }
 }
