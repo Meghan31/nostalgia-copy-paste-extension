@@ -1,0 +1,1 @@
+import"./assets/modulepreload-polyfill-B5Qt9EMX.js";chrome.runtime.onMessage.addListener((t,i,e)=>{if((t==null?void 0:t.type)==="nostalgia-read-clipboard")return navigator.clipboard.readText().then(r=>e({text:r})).catch(r=>{console.error("Nostalgia offscreen: clipboard read failed",r),e({text:"",error:String(r)})}),!0});

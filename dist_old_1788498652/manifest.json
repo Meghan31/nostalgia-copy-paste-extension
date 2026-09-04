@@ -18,7 +18,7 @@
 		"48": "public/48.png",
 		"192": "public/192.png"
 	},
-	"permissions": ["storage", "contextMenus", "clipboardRead"],
+	"permissions": ["storage", "contextMenus", "clipboardRead", "offscreen"],
 	"host_permissions": ["<all_urls>"],
 	"background": {
 		"service_worker": "background.js",
@@ -37,7 +37,7 @@
 		"add_note": {
 			"suggested_key": {
 				"default": "Ctrl+Shift+E",
-				"mac": "Command+Shift+U"
+				"mac": "Command+E"
 			},
 			"description": "Save clipboard text as a new note"
 		}

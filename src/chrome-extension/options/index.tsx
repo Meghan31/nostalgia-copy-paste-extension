@@ -39,6 +39,9 @@ const Options = () => {
 	const [importMessage, setImportMessage] = useState<string | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
+	// Floating "Save to Nostalgia" bubble toggle (read by the content script)
+	const [floatingBubbleEnabled, setFloatingBubbleEnabled] = useState(true);
+
 	useEffect(() => {
 		chrome.storage.local.get(['notes'], (result) => {
 			const loaded: Note[] = result.notes ?? [];
@@ -64,6 +67,12 @@ const Options = () => {
 		});
 	}, []);
 
+	useEffect(() => {
+		chrome.storage.local.get(['floatingBubbleEnabled'], (result) => {
+			setFloatingBubbleEnabled(result.floatingBubbleEnabled !== false);
+		});
+	}, []);
+
 	// Auto-dismiss the import summary after a few seconds
 	useEffect(() => {
 		if (!importMessage) return;
@@ -76,6 +85,12 @@ const Options = () => {
 		setTheme(newTheme);
 		document.documentElement.className = newTheme === 'dark' ? 'dark-theme' : '';
 		chrome.storage.local.set({ theme: newTheme });
+	};
+
+	const toggleFloatingBubble = () => {
+		const next = !floatingBubbleEnabled;
+		setFloatingBubbleEnabled(next);
+		chrome.storage.local.set({ floatingBubbleEnabled: next });
 	};
 
 	const copyToClipboard = (text: string, id: string) => {
@@ -299,6 +314,33 @@ const Options = () => {
 					<span className="stat-label">Unpinned</span>
 				</div>
 			</div>
+
+			{/* Capture settings */}
+			<section className="capture-settings">
+				<div className="capture-settings-header">
+					<span className="section-badge">⚡</span>
+					<h2 className="section-title">Quick Capture</h2>
+				</div>
+				<p className="capture-settings-hint">
+					Highlight text on any page and right-click it to <strong>Save selection to Nostalgia</strong> instantly. Press{' '}
+					<kbd>⌘E</kbd> (<kbd>Ctrl+Shift+E</kbd> on Windows/Linux) to save whatever's on your clipboard without opening the popup.
+				</p>
+				<div className="capture-toggle-row">
+					<span className="capture-toggle-label">
+						Show a "Save to Nostalgia" bubble when I select text on a page
+					</span>
+					<button
+						type="button"
+						role="switch"
+						aria-checked={floatingBubbleEnabled}
+						className={`toggle-pill ${floatingBubbleEnabled ? 'on' : 'off'}`}
+						onClick={toggleFloatingBubble}
+						title={floatingBubbleEnabled ? 'Turn off the selection bubble' : 'Turn on the selection bubble'}
+					>
+						<span className="toggle-knob" />
+					</button>
+				</div>
+			</section>
 
 			{/* Content */}
 			<main className="options-content">
